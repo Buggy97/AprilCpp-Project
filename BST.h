@@ -70,22 +70,23 @@ class BST
 			father = _father;
 		}
 		
-		//Copy constructor
+		// Copy constructor
 		BST(const BST& other)
+			: father(nullptr)
+			, data(new T(*other.data))
+			, elements(new long(*other.elements))
 		{
-			this->father = nullptr;
-			this->data = new T(*(other.data));
-			new_count++;
-			this->elements = new long(*(other.elements));
-			new_count++;
+			new_count += 2;
+
 			if (other.left)
 			{
-				this->left = new BST(*(other.left));
+				this->left = new BST(*other.left);
 				new_count++;
 			}
+				
 			if (other.right)
 			{
-				this->right = new BST(*(other.right));
+				this->right = new BST(*other.right);
 				new_count++;
 			}
 		}
@@ -96,12 +97,13 @@ class BST
 			delete this->data;
 			delete this->left;
 			delete this->right;
-			delete_count+=4;
+			
+			delete_count += 4;
 		}
 		
 		void insert(T* _value)
 		{
-			if(!data)
+			if (!data)
 			{
 				father = nullptr;
 				left = nullptr;
