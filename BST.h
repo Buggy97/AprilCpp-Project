@@ -1,9 +1,15 @@
 #ifndef BST_H
 #define BST_H
 
+extern int new_count;
+extern int delete_count;
+
 template <typename T>
 class BST
 {
+	public:
+		typedef bool (*predicate)(const T&);
+	
 	private:
 		long* elements;
 		T* data;
@@ -11,14 +17,25 @@ class BST
 		BST* left;
 		BST* right;
 		
-		void visit(std::ostream& os) const
+		static bool default_predicate(const T& elem)
+		{
+			return true;
+		}
+		
+		void visit(std::ostream& os, predicate p = &default_predicate) const
 		{
 			if(data)
-				os << *data << " ";
+			{	
+				if(!p)
+					os << *data << " ";
+				else if(p(*data))
+					os << *data << " ";
+					
+			}
 			if(left)
-				left->visit(os);
+				left->visit(os, p);
 			if(right)
-				right->visit(os);
+				right->visit(os, p);
 			
 		}
 		
@@ -26,24 +43,17 @@ class BST
 		BST()
 		{
 			elements = new long(0);
+			new_count++;
 			data = nullptr;
 			father = nullptr;
 			left = nullptr;
 			right = nullptr;
 		}
 		
-		BST(BST* _father)
-		{
-			elements = new long(0);
-			data = nullptr;
-			left = nullptr;
-			right = nullptr;
-			father = _father;
-		}
-		
 		BST(T* _data)
 		{
 			elements = new long(0);
+			new_count++;
 			father = nullptr;
 			left = nullptr;
 			right = nullptr;
@@ -53,10 +63,40 @@ class BST
 		BST(T* _data, BST* _father)
 		{
 			elements = new long(0);
+			new_count++;
 			left = nullptr;
 			right = nullptr;
 			data = _data;
 			father = _father;
+		}
+		
+		//Copy constructor
+		BST(const BST& other)
+		{
+			this->father = nullptr;
+			this->data = new T(*(other.data));
+			new_count++;
+			this->elements = new long(*(other.elements));
+			new_count++;
+			if (other.left)
+			{
+				this->left = new BST(*(other.left));
+				new_count++;
+			}
+			if (other.right)
+			{
+				this->right = new BST(*(other.right));
+				new_count++;
+			}
+		}
+		
+		~BST()
+		{
+			delete this->elements;
+			delete this->data;
+			delete this->left;
+			delete this->right;
+			delete_count+=4;
 		}
 		
 		void insert(T* _value)
@@ -77,6 +117,7 @@ class BST
 				 {
 				 	std::cout << "Added " << *_value << std::endl;
 					right = new BST(_value, this);
+					new_count++;
 				}
 			else
 				if(left)
@@ -85,6 +126,7 @@ class BST
 				{
 					std::cout << "Added " << *_value << std::endl;
 					left = new BST(_value, this);
+					new_count++;
 				}
 			(*elements)++;
 		}
@@ -133,6 +175,12 @@ class BST
 					return left ->subtree(key);
 				return nullptr;
 			}
+		}
+		
+		void printif(predicate p = default_predicate)
+		{
+			visit(std::cout, p);
+			std::cout << std::endl;
 		}
 		
 		void elems()
