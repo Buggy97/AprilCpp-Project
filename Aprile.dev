@@ -60,12 +60,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit3]
-FileName=BST.h
-
 [Unit2]
 FileName=BST.h
 CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit4]
+FileName=Untitled3
 Folder=
 Compile=1
 Link=1
