@@ -8,7 +8,7 @@
 
 struct default_comparator
 {
-	inline int operator()(const int& a, const int& b)
+	inline int operator()(const int& a, const int& b) const
 	{
 		if (a > b)
 			return 1;
@@ -62,18 +62,28 @@ void print(int p)
 	std::cout << "Number: " << p << std::endl;
 }
 
+template <typename T, typename Comparator, typename Predicate> 
+void printIF(BST<T, Comparator>* tree)
+{
+	Predicate predicate;
+	if(!tree)
+		return;
+	printIF<T, Comparator, Predicate>(tree->left);
+	if(tree->data && predicate(*tree->data))
+		std::cout << *tree->data << " ";
+	printIF<T, Comparator, Predicate>(tree->right);
+}
 
 int main(int argc, char** argv) 
 {
 	BST<int, default_comparator>* bst = new BST<int, default_comparator>();
-	std::vector<int> vec;// = new std::vector<int>();
+	std::vector<int> vec;
 	
 	srand(time(NULL));
 	int vals[] = {5,2,3,4,1,8,6,9,7};
 	
 	for(int i = 0; i < 9; i++)
 	{
-		//double to_add = ((double)(rand()%10000))/100.d;
 		int to_add = rand()%100;
 		int* ot = new int(vals[i]);
 		bst->insert(*ot);
@@ -82,9 +92,7 @@ int main(int argc, char** argv)
 	
 	BST<int, default_comparator>::const_iterator it = bst->begin();
 	std::vector<int>::const_iterator vit = vec.begin();
-	
-	//std::cout << *bst << std::endl;
-	
+		
 	while(it!=bst->end())
 		std::cout << *it << " ", it++;
 	std::cout << std::endl << std::endl;
@@ -93,11 +101,32 @@ int main(int argc, char** argv)
 	for(int p : vec)
 		std::cout << p << " ";
 
+	std::cout << "\nUsing PrintIF" << std::endl;
 	
+	struct pari
+	{
+		inline bool operator()(const int& a) const
+		{
+			if(a%2==0)
+				return true;
+			else
+				return false;
+		}
+	};
+	
+	struct dispari
+	{
+		inline bool operator()(int a) const
+		{
+			if(a%2!=0)
+				return true;
+			else
+				return false;
+		}
+	};
+
+	printIF<int, default_comparator, dispari>(bst);
+	printIF<int, default_comparator, pari>(bst);
+
 	delete bst;
-	//delete vec;
-
-	//std::cout << sub << std::endl;*/
-
 }
-
