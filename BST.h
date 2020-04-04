@@ -7,8 +7,10 @@ class BST
 {
 	public:
 		typedef bool (*predicate)(const T&);
-	
+		typedef int  (*compareFunc)(const T&, const T&);
+		
 	private:
+		compareFunc compFunc;
 		long* elements;
 		T* data;
 		BST* father;
@@ -19,6 +21,16 @@ class BST
 		static bool default_predicate(const T& elem)
 		{
 			return true;
+		}
+		
+		static int default_compare_func(const T& elem1, const T& elem2) 
+		{
+			if(elem1 < elem2)
+				return -1;
+			else if(elem1 > elem2)
+				return 1;
+			else
+				return 0;
 		}
 		
 		void visit(std::ostream& os, predicate p = &default_predicate) const
@@ -37,37 +49,41 @@ class BST
 		}
 		
 	public:
-		BST()
+		BST(compareFunc f = &default_compare_func)
 		{
 			elements = new long(0);
 			data = nullptr;
 			father = nullptr;
 			left = nullptr;
 			right = this;
+			compFunc = f;
 		}
 		
-		BST(T* _data)
+		BST(T* _data, compareFunc f = &default_compare_func)
 		{
 			elements = new long(0);
 			father = nullptr;
 			left = nullptr;
 			right = nullptr;
 			data = _data;
+			compFunc = f;
 		}
 		
-		BST(T* _data, BST* _father)
+		BST(T* _data, BST* _father, compareFunc f = &default_compare_func)
 		{
 			elements = new long(0);
 			left = nullptr;
 			right = nullptr;
 			data = _data;
 			father = _father;
+			compFunc = f;
 		}
 		
 		//Copy constructor
 		BST(const BST& other)
 		{
 			//std::cout << "COPY CONSTRUCTOR\n";
+			this->compFunc = other.compFunc;
 			this->father = nullptr;
 			std::cout << *other.data << std::endl;
 			this->data = new T(*other.data);
@@ -85,7 +101,7 @@ class BST
 		
 		~BST()
 		{
-			delete this->elements;
+			delete this->elements; //Da decidere
 			delete this->data;
 			delete this->left;
 			delete this->right;
@@ -105,7 +121,7 @@ class BST
 				std::cout << "Added " << *_value << std::endl;
 				return;
 			}
-			if(*_value > *data)
+			if(compFunc(*_value, *data) > 0)
 				if(right)
 					right->insert(_value);
 				else
@@ -114,7 +130,7 @@ class BST
 					right = new BST(_value, this);
 					
 				}
-			else
+			else if(compFunc(*_value, *data) < 0)
 				if(left)
 					left->insert(_value);
 				else
@@ -123,6 +139,8 @@ class BST
 					left = new BST(_value, this);
 					
 				}
+			else
+				throw "Valore gia' presente!";
 			(*elements)++;
 		}
 		
@@ -132,7 +150,7 @@ class BST
 				return true;
 			if (data)
 			{
-				if (key > *data && right)
+				if (compFunc(key, *data) > 0 && right)
 					return right->exists(key);
 				else if (left)
 					return left->exists(key);
@@ -155,11 +173,11 @@ class BST
 			if(!data)
 				std::cout << "Breach!\n";
 			std::cout << "Visting: " << *(this->data) << std::endl;
-			if (data && key==*data)
+			if (data && compFunc(key, *data) == 0)
 				return new BST(*this);
 			if (data)
 			{
-				if (key > *data && right)
+				if (compFunc(key, *data) > 0 && right)
 					return right->subtree(key);
 				else if (left)
 					return left->subtree(key);

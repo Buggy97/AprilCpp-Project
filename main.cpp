@@ -12,6 +12,15 @@ bool maggioredi(const int& p)
 	return p>-999;
 }
 
+int scuffedcompareFunction(const int& a, const int& b)
+{
+	if(a > b)
+		return 1;
+	else if(a < b)
+		return -1;
+	else return 0;
+}
+
 bool sempreTrue(const int& p)
 {
 	return true;
@@ -25,15 +34,15 @@ void print(int p)
 
 int main(int argc, char** argv) 
 {
-	BST<int>* bst = new BST<int>();
+	BST<int>* bst = new BST<int>(&scuffedcompareFunction);
 	srand(time(NULL));
 	int vals[] = {5,2,3,4,1,8,6,9,7};
 	
-	for(int i = 0; i < 50; i++)
+	for(int i = 0; i < 9; i++)
 	{
 		//double to_add = ((double)(rand()%10000))/100.d;
 		int to_add = rand()%100;
-		bst->insert(new int(to_add));
+		bst->insert(new int(vals[i]));
 	}
 	
 	BST<int>::const_iterator it = bst->begin();
