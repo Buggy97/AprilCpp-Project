@@ -1,16 +1,27 @@
 #ifndef BST_H
 #define BST_H
 
+//Forward declaration per operatore << 
+template <typename T, typename Comparator> class BST;
+template <typename T, typename Comparator> std::ostream& operator<<( std::ostream&, const BST<T, Comparator>& );
+template <typename T, typename Predicate> void printIF();
 
-template <typename T>
+//Per evitare che vengano create classi BST per puntatori.
+template <class T, typename Comparator>
+class BST<T*, Comparator>
+{
+	private:
+		BST(){}		
+};
+
+template <typename T, typename Comparator>
 class BST
 {
 	public:
 		typedef bool (*predicate)(const T&);
-		typedef int  (*compareFunc)(const T&, const T&);
-		
+				
 	private:
-		compareFunc compFunc;
+		Comparator comparator;
 		long* elements;
 		T* data;
 		BST* father;
@@ -21,16 +32,6 @@ class BST
 		static bool default_predicate(const T& elem)
 		{
 			return true;
-		}
-		
-		static int default_compare_func(const T& elem1, const T& elem2) 
-		{
-			if(elem1 < elem2)
-				return -1;
-			else if(elem1 > elem2)
-				return 1;
-			else
-				return 0;
 		}
 		
 		void visit(std::ostream& os, predicate p = &default_predicate) const
@@ -49,41 +50,36 @@ class BST
 		}
 		
 	public:
-		BST(compareFunc f = &default_compare_func)
+		BST()
 		{
 			elements = new long(0);
 			data = nullptr;
 			father = nullptr;
 			left = nullptr;
-			right = this;
-			compFunc = f;
+			right = nullptr;
 		}
 		
-		BST(T* _data, compareFunc f = &default_compare_func)
+		BST(T& _data)
 		{
 			elements = new long(0);
 			father = nullptr;
 			left = nullptr;
 			right = nullptr;
-			data = _data;
-			compFunc = f;
+			data = &_data;
 		}
 		
-		BST(T* _data, BST* _father, compareFunc f = &default_compare_func)
+		BST(T& _data, BST* _father)
 		{
 			elements = new long(0);
 			left = nullptr;
 			right = nullptr;
-			data = _data;
+			data = &_data;
 			father = _father;
-			compFunc = f;
 		}
 		
 		//Copy constructor
-		BST(const BST& other)
+		BST(const BST<T, Comparator>& other)
 		{
-			//std::cout << "COPY CONSTRUCTOR\n";
-			this->compFunc = other.compFunc;
 			this->father = nullptr;
 			std::cout << *other.data << std::endl;
 			this->data = new T(*other.data);
@@ -101,8 +97,7 @@ class BST
 		
 		~BST()
 		{
-			delete this->elements; //Da decidere
-			delete this->data;
+			delete this->elements;
 			delete this->left;
 			delete this->right;
 		}
@@ -110,47 +105,48 @@ class BST
 		//Getter and setters;
 		
 		
-		void insert(T* _value)
+		void insert(T& _value)
 		{
 			if(!data)
 			{
 				father = nullptr;
 				left = nullptr;
 				right = nullptr;
-				data = _value;
-				std::cout << "Added " << *_value << std::endl;
+				data = &_value;
+				std::cout << "Added " << _value << std::endl;
 				return;
 			}
-			if(compFunc(*_value, *data) > 0)
+			if(comparator(_value, *data) > 0)
 				if(right)
 					right->insert(_value);
 				else
 				 {
-				 	std::cout << "Added " << *_value << std::endl;
+				 	std::cout << "Added " << _value << std::endl;
 					right = new BST(_value, this);
 					
 				}
-			else if(compFunc(*_value, *data) < 0)
+			else if(comparator(_value, *data) < 0)
 				if(left)
 					left->insert(_value);
 				else
 				{
-					std::cout << "Added " << *_value << std::endl;
+					std::cout << "Added " << _value << std::endl;
 					left = new BST(_value, this);
 					
 				}
 			else
-				throw "Valore gia' presente!";
+				std::cout << "Added " << _value << std::endl;
+
 			(*elements)++;
 		}
 		
-		bool exists(T key)
+		bool exists(T& key)
 		{
 			if (data && key==*data)
 				return true;
 			if (data)
 			{
-				if (compFunc(key, *data) > 0 && right)
+				if (comparator(key, *data) > 0 && right)
 					return right->exists(key);
 				else if (left)
 					return left->exists(key);
@@ -168,16 +164,16 @@ class BST
 		}
 		
 		//TODO Restituire una copia anziche' una parte del BST
-		BST* subtree(T key)
+		BST* subtree(const T& key)
 		{
 			if(!data)
 				std::cout << "Breach!\n";
 			std::cout << "Visting: " << *(this->data) << std::endl;
-			if (data && compFunc(key, *data) == 0)
+			if (data && comparator(key, *data) == 0)
 				return new BST(*this);
 			if (data)
 			{
-				if (compFunc(key, *data) > 0 && right)
+				if (comparator(key, *data) > 0 && right)
 					return right->subtree(key);
 				else if (left)
 					return left->subtree(key);
@@ -185,7 +181,8 @@ class BST
 			return nullptr;
 		}
 		
-		BST<int>& operator=(const BST<int>& other)
+		//Assegnamento solo tra BST con stesso comparator e stesso tipi di dati
+		BST<T, Comparator>& operator=(const BST<T, Comparator>& other)
 		{
 			//std::cout << "ASSIGNMENT OPERATOR\n";
 			if(&other != this)
@@ -195,6 +192,7 @@ class BST
 				this->father = other.father;
 				this->left = other.left;
 				this->right = other.right;
+				this->beg = other.beg;
 			}
 			return *this;
 		}
@@ -209,141 +207,17 @@ class BST
 		{
 			std::cout << "Got " << *(this->elements) << " items!" << std::endl;
 		}
-		
-		class ConstBSTForwardIterator;
-		
-		template <typename Q>
-		friend std::ostream& operator<< (std::ostream&, const BST<Q>&);
-		
-		class BSTForwardIterator 
-		{		
-			private:
-				BST* pdata;
-				bool leftdone;
-			public:
-				typedef std::forward_iterator_tag iterator_category;
-				typedef T                         value_type;
-				typedef ptrdiff_t                 difference_type;
-				typedef T*                        pointer;
-				typedef T&                        reference;
-		
-			
-				BSTForwardIterator() : pdata(nullptr), leftdone(false) { }
 				
-				BSTForwardIterator(const BSTForwardIterator &other) : pdata(other.pdata), leftdone(other.leftdone) { }
+		friend std::ostream& operator<< <T, Comparator>( std::ostream&, const BST<T, Comparator>& );
+
+		template <typename B>
+		friend void printIF<T,B>();
 		
-				BSTForwardIterator& operator=(const BSTForwardIterator &other) {
-					pdata = other.pdata;
-					leftdone = other.leftdone;
-					return *this;
-				}
-		
-				~BSTForwardIterator() { }
-		
-				// Ritorna il dato riferito dall'iteratore (dereferenziamento)
-				reference operator*() const {
-					return *pdata->data;
-				}
-		
-				// Ritorna il puntatore al dato riferito dall'iteratore
-				pointer operator->() const {
-					return pdata->data;
-				}
-		
-				// Operatore di iterazione post-incremento
-				BSTForwardIterator operator++(int) {
-					BSTForwardIterator tmp(*this);
-					next();
-					return tmp;
-				}
-		
-				// Operatore di iterazione pre-incremento
-				BSTForwardIterator& operator++() {
-					next();
-					return *this;
-				}
-		
-				// Uguaglianza
-				bool operator==(const BSTForwardIterator &other) const {
-					return pdata == other.pdata;
-				}
-		
-				// Diversita'
-				bool operator!=(const BSTForwardIterator &other) const {
-					return pdata != other.pdata;
-				}
-				
-				friend class ConstBSTForwardIterator;
-		
-				// Uguaglianza
-				bool operator==(const ConstBSTForwardIterator &other) const {
-					return pdata == other.pdata;
-				}
-		
-				// Diversita'
-				bool operator!=(const ConstBSTForwardIterator &other) const {
-					return pdata != other.pdata;
-				}
-		
-			private:
-		
-				// La classe container deve essere messa friend dell'iteratore per poter
-				// usare il costruttore di inizializzazione.
-				friend class BST<T>; // !!! Da cambiare il nome!
-				
-				void next()
-				{
-					if(!pdata)
-						return;
-					std::cout << "aaaaaaaaaaaaaCDATA: " << *pdata->data << std::endl; 
-					// If left child is not traversed, find the 
-			        // leftmost child 
-			        if (!leftdone) 
-			        { 
-			            while (pdata->left) 
-			                pdata = pdata->left;
-			          	leftdone = true; 
-			          	return;
-			        }  
-			        
-			        // If right child exists 
-			        if (pdata->right) 
-			        { 
-			            leftdone = false; 
-			            pdata = pdata->right; 
-			        } 
-			  
-			        // If right child doesn't exist, move to father 
-			        else if (pdata->father) 
-			        { 
-			            // If this node is right child of its father, 
-			            // visit father's father first 
-			            while (pdata->father && 
-			                   pdata == pdata->father->right) 
-			                pdata = pdata->father; 
-			            if (!pdata->father)
-						{ 
-			                pdata = nullptr;
-			                //std::cout << "AFTER-CDATA: " << *pdata->data << std::endl; 
-			                return;
-			            }
-			            pdata = pdata->father;
-			        }
-			        else
-			        	pdata = nullptr;
-			        
-			        //std::cout << "AFTER-CDATA: " << *pdata->data << std::endl; 
-				}
-				
-				// Costruttore privato di inizializzazione usato dalla classe container
-				// tipicamente nei metodi begin e end
-				explicit BSTForwardIterator(BST<T> *p) : pdata(p), leftdone(false) {next();}
-						
-		}; // classe BSTForwardIterator
 		class ConstBSTForwardIterator 
 		{
-			const BST* pdata;	
-			bool leftdone;
+			private:
+				const BST<T, Comparator>* pdata;	
+				bool leftdone;
 			public:
 				typedef std::forward_iterator_tag iterator_category;
 				typedef T                         value_type;
@@ -396,35 +270,12 @@ class BST
 				bool operator!=(const ConstBSTForwardIterator &other) const {
 					return pdata != other.pdata;
 				}
-		
-				friend class BSTForwardIterator;
-		
-				// Uguaglianza
-				bool operator==(const BSTForwardIterator &other) const {
-					return pdata == other.pdata;
-				}
-		
-				// Diversita'
-				bool operator!=(const BSTForwardIterator &other) const {
-					return pdata != other.pdata;
-				}
-		
-				// Costruttore di conversione BSTForwardIterator -> ConstBSTForwardIterator
-				ConstBSTForwardIterator(const BSTForwardIterator &other) : pdata(other.pdata), leftdone(other.leftdone) {
-				}
-		
-				// Assegnamento di un BSTForwardIterator ad un ConstBSTForwardIterator
-				ConstBSTForwardIterator &operator=(const BSTForwardIterator &other) {
-					pdata = other.pdata;
-					leftdone = other.leftdone;
-					return *this;
-				}
 	
 			private:
 	
 				// La classe container deve essere messa friend dell'iteratore per poter
 				// usare il costruttore di inizializzazione.
-				friend class BST<T>; // !!! Da cambiare il nome!
+				friend class BST<T, Comparator>; // !!! Da cambiare il nome!
 				
 				void next()
 				{
@@ -487,14 +338,13 @@ class BST
 		
 				// Costruttore privato di inizializzazione usato dalla classe container
 				// tipicamente nei metodi begin e end
-				ConstBSTForwardIterator(const BST<T>* p) : pdata(p), leftdone(false) {next();}
+				ConstBSTForwardIterator(const BST<T, Comparator>* p) : pdata(p), leftdone(false) {next();}
 				// !!! Eventuali altri metodi privati
 				
 		}; // classe ConstBSTForwardIterator
 		
 		public:
 			
-			typedef BSTForwardIterator iterator;
 			typedef ConstBSTForwardIterator const_iterator;
 						
 			const_iterator begin()
@@ -508,39 +358,19 @@ class BST
 			}
 };
 
-template<typename T>
-std::ostream& operator<< (std::ostream& os, const BST<T>& elem)
+template<typename T, typename Comparator>
+std::ostream& operator<< (std::ostream& os, const BST<T, Comparator>& elem)
 {
 	elem.visit(os);
 	return os;
 }
 
+template <typename T, typename Predicate> 
+void printIF()
+{
+	return;
+}
+
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
