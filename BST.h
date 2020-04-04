@@ -4,7 +4,7 @@
 //Forward declaration per operatore << 
 template <typename T, typename Comparator> class BST;
 template <typename T, typename Comparator> std::ostream& operator<<( std::ostream&, const BST<T, Comparator>& );
-//template <typename T, typename Predicate> void printIF();
+template <typename A, typename B> void printIF();
 
 //Per evitare che vengano create classi BST per puntatori.
 template <class T, typename Comparator>
@@ -204,9 +204,9 @@ class BST
 		}
 
 		friend std::ostream& operator<< <T, Comparator>( std::ostream&, const BST<T, Comparator>& );
-
+		
 		template <typename B>
-		friend void printIF<T>();
+		void printIF<T,B>();
 		
 		class ConstBSTForwardIterator 
 		{
