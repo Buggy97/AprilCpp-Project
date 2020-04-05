@@ -7,7 +7,7 @@
 
 /**
 @file BST.h 
-@brief Dichiarazione della classe BST (Binary search tree)
+@brief Dichiarazione della classe BST (Binary search tree).
 **/
 
 //Forward declaration per operatore << 
@@ -22,7 +22,7 @@ class BST<T*, Comparator>
 };
 
 /**
-@brief Eccezione per elemento doppio inserito
+@brief Eccezione per elemento doppio inserito.
 **/
 struct BSTDoubleElementException : public std::exception
 {
@@ -33,9 +33,9 @@ struct BSTDoubleElementException : public std::exception
 };
 
 /**
-@brief Albero di ricerca binario (BST)
+@brief Albero di ricerca binario (BST).
 
-Classe che rappresenta un albero binario di ricerca di dati generici
+Classe che rappresenta un albero binario di ricerca di dati generici.
 La struttura non e' autobilanciante, spetta all'utente un inserimento appropriato
 per garantire le massime prestazioni di ricerca. La classe puo' essere costruita per 
 dati che non sono puntatori e per cui e' possibile definire un Comparator, nel caso 
@@ -61,7 +61,7 @@ class BST
 		BST* right; ///< Figlio destro del nodo
 		
 		/**
-		@brief Costruttore di copia interno
+		@brief Costruttore di copia interno.
 
 		Costruttore di copia interno che permette di copiare un BST riassegnandoli il padre
 		Viene usato internamente dal costruttore di copia pubblico
@@ -85,7 +85,7 @@ class BST
 		
 	public:
 		/**
-		@brief Costruttore di default
+		@brief Costruttore di default.
 
 		Costruttore di default per istanziare un BST vuoto. E' l'unico costruttore
 		che puo' essere usato per creare un BST vuoto
@@ -99,7 +99,7 @@ class BST
 		{
 		}
 		/**
-		@brief Costruttore secondario
+		@brief Costruttore secondario.
 
 		Costruttore che permette di instanziare un BST con un elemento
 		**/
@@ -112,9 +112,9 @@ class BST
 		{
 		}
 		/**
-		@brief Copy constructor
+		@brief Copy constructor.
 	
-		Costruttore di copia. Permette di istanziare un BST a partire da un'altro BST.
+		Copy constructor. Permette di istanziare un BST a partire da un'altro BST.
 		La copia avviene in maniera ricorsiva 
 		@param other BST da usare per creare quello corrente
 		**/
@@ -134,8 +134,8 @@ class BST
 				this->right = nullptr;
 		}
 		/**
-		@brief Distruttore
-		Rimuove la memoria allocata dal BST
+		@brief Distruttore.
+		Rimuove la memoria allocata dal BST.
 		Il dato del nodo non viene eliminato poiche' e' una reference
 		**/
 		~BST()
@@ -145,7 +145,7 @@ class BST
 			delete this->right;
 		}
 		/**
-		@brief Inserisce un dato nel BST 
+		@brief Inserisce un dato nel BST.
 		L'inserimento avviene in maniera ricorsiva in modo da mantenere la proprieta'
 		BST. Poiche' i valori uguali non sono supportati, lancia un'eccezione nel caso 
 		si provasse ad inserire un valore gia' presente
@@ -186,7 +186,7 @@ class BST
 			(*elements)++;
 		}
 		/**
-		@brief Controlla se un elemento e' presente nel BST
+		@brief Controlla se un elemento e' presente nel BST.
 		Il controllo avviene in maniera ricorsiva. E' necessario
 		all'utente per controllare se il valore che sta per inserire 
 		e' gia' presente
@@ -217,7 +217,7 @@ class BST
 		}
 		
 		/**
-		@brief Restituisce un sottoalbero avente come radice un nodo specifico
+		@brief Restituisce un sottoalbero avente come radice un nodo specifico.
 		Trova un nodo con valore specificato e resitituisce una copia del suo
 		sottoalbero.
 		@param key dato della radice del sottoalbero
@@ -239,7 +239,7 @@ class BST
 		}
 		
 		/**
-		@brief Operatore di assegnamento
+		@brief Operatore di assegnamento.
 		Permette la copia tra BST
 		@param other albero sorgente
 		@return riferimento a this
@@ -264,7 +264,7 @@ class BST
 	friend void printIF(BST<Q, G>* tree);
 	
 	/**
-	@brief Iteratore costante per albero BST
+	@brief Iteratore costante per albero BST.
 	
 	Classe iteratore per iterare sui nodi di un albero BST.
 	L'iterazione avviene in order.
@@ -283,13 +283,13 @@ class BST
 			typedef const T&                  reference; ///< Trait stl
 	
 			/**
-			@brief Costruttore di default
+			@brief Costruttore di default.
 			Costruttore di default per istanziare un iteratore nullo.
 			**/
 			ConstBSTForwardIterator() : node(nullptr), leftdone(false) { }
 			
 			/**
-			@brief Copy constructor
+			@brief Copy constructor.
 		
 			Costruttore di copia. Permette di istanziare un ConstBSTForwardIterator a partire da un'altro ConstBSTForwardIterator. 
 			@param other ConstBSTForwardIterator da usare per creare quello corrente
@@ -297,8 +297,8 @@ class BST
 			ConstBSTForwardIterator(const ConstBSTForwardIterator &other) : node(other.node), leftdone(false) { }
 			
 			/**
-			@brief Operatore di assegnamento
-			Permette la copia tra ConstBSTForwardIterator
+			@brief Operatore di assegnamento.
+			Permette la copia tra ConstBSTForwardIterator.
 			@param other iteratore sorgente
 			@return riferimento a this
 			**/
@@ -309,12 +309,12 @@ class BST
 			}
 			
 			/**
-			@brief Distruttore default
+			@brief Distruttore default.
 			**/
 			~ConstBSTForwardIterator() { }
 	
 			/** 
-			@brief Ritorna il dato riferito dall'iteratore (dereferenziamento)
+			@brief Ritorna il dato riferito dall'iteratore (dereferenziamento).
 			**/
 			reference operator*() const 
 			{
@@ -322,7 +322,7 @@ class BST
 			}
 			
 			/**
-			@brief Ritorna il puntatore al dato riferito dall'iteratore
+			@brief Ritorna il puntatore al dato riferito dall'iteratore.
 			**/
 			pointer operator->() const 
 			{
@@ -330,7 +330,7 @@ class BST
 			}
 			
 			/**
-			@brief Operatore di iterazione post-incremento
+			@brief Operatore di iterazione post-incremento.
 			**/
 			ConstBSTForwardIterator operator++(int)
 			{
@@ -340,7 +340,7 @@ class BST
 			}
 			
 			/**
-			@brief Operatore di iterazione pre-incremento
+			@brief Operatore di iterazione pre-incremento.
 			**/
 			ConstBSTForwardIterator& operator++()
 			{
@@ -349,7 +349,7 @@ class BST
 			}
 			
 			/**
-			@brief Uguaglianza
+			@brief Uguaglianza.
 			**/
 			bool operator==(const ConstBSTForwardIterator &other) const
 			{
@@ -357,7 +357,7 @@ class BST
 			}
 			
 			/**
-			@brief Diversita'
+			@brief Diversita'.
 			**/
 			bool operator!=(const ConstBSTForwardIterator &other) const 
 			{
@@ -371,7 +371,7 @@ class BST
 			friend class BST<T, Comparator>; 
 			
 			/**
-			@brief Itera al prossimo nodo (in order)
+			@brief Itera al prossimo nodo (in order).
 			Itera in order al prossimo nodo dell'albero.
 			Ogni qualvolta che viene chiamato l'operatore ++, viene chiamato
 			questo metodo.
@@ -427,7 +427,7 @@ class BST
 			
 			/** 
 			@brief Costruttore privato.
-			Costruttore di inizializzazione usato dalla classe container
+			Costruttore di inizializzazione usato dalla classe container.
 			per metodi begin() e end()
 			**/
 			ConstBSTForwardIterator(const BST<T, Comparator>* p) : node(p), leftdone(false) {next();}
