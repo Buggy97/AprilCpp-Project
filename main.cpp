@@ -92,6 +92,8 @@ int main(int argc, char** argv)
 	
 	BST<int, default_comparator>::const_iterator it = bst->begin();
 	std::vector<int>::const_iterator vit = vec.begin();
+	
+	BST<int, default_comparator>::ConstBSTForwardIterator* itg = new BST<int, default_comparator>::ConstBSTForwardIterator();
 		
 	while(it!=bst->end())
 		std::cout << *it << " ", it++;
