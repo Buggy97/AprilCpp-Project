@@ -71,7 +71,7 @@ class BST
 		BST(const BST<T, Comparator>& other, BST<T, Comparator>* _father)
 		{
 			this->father = _father;
-			this->data = *other.data;
+			this->data = other.data;
 			this->elements = new long(*other.elements);
 			if (other.left)
 				this->left = new BST(*(other.left), _father);
@@ -121,7 +121,7 @@ class BST
 		BST(const BST<T, Comparator>& other) //La copy constructor copia dall'alto verso in basso perche' se copiasse anche il padre rischierebbe di non mantenere la proprieta' BST
 		{
 			this->father = nullptr;
-			this->data = *other.data;
+			this->data = other.data;
 			this->elements = new long(*other.elements);
 			
 			if (other.left)

@@ -131,6 +131,12 @@ int main(int argc, char** argv)
 
 	printIF<int, default_comparator, dispari>(bst);
 	printIF<int, default_comparator, pari>(bst);
-
+	
+	BST<int, default_comparator>* sub8 = bst->subtree(8);
 	delete bst;
+	
+	
+	std::cout << std::endl << "SUB 8: " <<*sub8 << std::endl;
+	
+	system("pause");
 }
