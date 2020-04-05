@@ -1,5 +1,6 @@
 #ifndef BST_H
 #define BST_H
+#include <exception>
 #include <iostream>
 #include <iterator> //per std::forward_iterator_tag
 #include <cstddef>  //per std::ptrdiff_t
@@ -11,7 +12,6 @@
 
 //Forward declaration per operatore << 
 template <typename T, typename Comparator> class BST;
-template <typename T, typename Comparator> std::ostream& operator<<( std::ostream&, const BST<T, Comparator>& );
 
 //Per evitare che vengano create classi BST per puntatori
 template <class T, typename Comparator>
@@ -19,6 +19,17 @@ class BST<T*, Comparator>
 {
 	private:
 		BST(){}		
+};
+
+/**
+@brief Eccezione per elemento doppio inserito
+**/
+struct BSTDoubleElementException : public std::exception
+{
+	const char * what () const throw ()
+    {
+    	return "Tried to insert a duplicate element";
+    }
 };
 
 /**
@@ -32,6 +43,8 @@ si provasse a instanziare per un dato di tipo puntatore si otterrebbe un errore 
 compilazione. La classe non effetua alcun deallocamento dei dati salvati all'interno
 del ciascun nodo
 Sono stati implementati gli iteratori di tipo const forward_iterator
+@param T tipo del dato
+@param Comparatore funtore di comparazione (<, >, =) di due dati, dato A e B resituisce 1 se A > B, -1 se A < B, 0 se A == B
 **/
 template <typename T, typename Comparator>
 class BST
@@ -40,12 +53,35 @@ class BST
 		Comparator comparator; ///< Comparator per confrontare 2 elementi A e B
 		long* elements; ///< Conteggio dei discendenti totali del nodo includendo se stesso
 		T* data; ///< Puntatore al dato del nodo
-				///< Ogni nodo non alloca alcuna memoria per il dato in se
-				///< in quanto salva l'indirizzo del dato, cio' consente 
-				///< all'utente di gestire il ciclo di vita dei dati salvati
+				 ///< Ogni nodo non alloca alcuna memoria per il dato in se
+				 ///< in quanto salva l'indirizzo del dato, cio' consente 
+				 ///< all'utente di gestire il ciclo di vita dei dati salvati
 		BST* father; ///< Padre del nodo
 		BST* left; ///< Figlio sinistro del nodo
 		BST* right; ///< Figlio destro del nodo
+		
+		/**
+		@brief Costruttore di copia interno
+
+		Costruttore di copia interno che permette di copiare un BST riassegnandoli il padre
+		Viene usato internamente dal costruttore di copia pubblico
+		@param other BST da usare per creare quello corrente con padre diverso
+		@param _father padre per il nuovo BST
+		**/
+		BST(const BST<T, Comparator>& other, BST<T, Comparator>* _father)
+		{
+			this->father = _father;
+			this->data = *other.data;
+			this->elements = new long(*other.elements);
+			if (other.left)
+				this->left = new BST(*(other.left), _father);
+			else
+				this->left = nullptr;
+			if (other.right)
+				this->right = new BST(*(other.right), _father);
+			else
+				this->right = nullptr;
+		}
 		
 	public:
 		/**
@@ -74,28 +110,6 @@ class BST
 			left(nullptr),
 			right(nullptr)
 		{
-		}
-		/**
-		@brief Costruttore di copia interno
-
-		Costruttore di copia interno che permette di copiare un BST riassegnandoli il padre
-		Viene usato internamente dal costruttore di copia pubblico
-		@param other BST da usare per creare quello corrente con padre diverso
-		@param _father padre per il nuovo BST
-		**/
-		BST(const BST<T, Comparator>& other, BST<T, Comparator>* _father)
-		{
-			this->father = _father;
-			this->data = *other.data;
-			this->elements = new long(*other.elements);
-			if (other.left)
-				this->left = new BST(*(other.left), _father);
-			else
-				this->left = nullptr;
-			if (other.right)
-				this->right = new BST(*(other.right), _father);
-			else
-				this->right = nullptr;
 		}
 		/**
 		@brief Copy constructor
@@ -167,7 +181,7 @@ class BST
 					
 				}
 			else
-				std::cout << "Added " << _value << std::endl; //Lancia eccezione
+				throw BSTDoubleElementException();
 
 			(*elements)++;
 		}
@@ -179,7 +193,7 @@ class BST
 		@param key valore da cercare nel BST
 		@return Se e' presente o meno l'emento (boolean)
 		**/
-		bool exists(T& key)
+		bool exists(const T& key) const
 		{
 			if (data && key==*data)
 				return true;
@@ -207,9 +221,9 @@ class BST
 		Trova un nodo con valore specificato e resitituisce una copia del suo
 		sottoalbero.
 		@param key dato della radice del sottoalbero
-		@return Riferimento al nuovo sottoalbero
+		@return Riferimento al nuovo sottoalbero, null se il valore non è presente
 		**/
-		BST* subtree(const T& key)
+		BST* subtree(const T& key) const
 		{
 			if (data && comparator(key, *data) == 0)
 				return new BST(*this);
@@ -221,7 +235,7 @@ class BST
 					return left->subtree(key);
 			}
 			if(!this->left && !this->right)
-				throw "Not found";
+				return nullptr;
 		}
 		
 		/**
@@ -258,58 +272,95 @@ class BST
 	class ConstBSTForwardIterator 
 	{
 		private:
-			const BST<T, Comparator>* node;
-			bool leftdone;
+			const BST<T, Comparator>* node; ///< Puntatore al nodo corrente
+			bool leftdone; ///< Puntatore al dato del nodo
+			
 		public:
-			typedef std::forward_iterator_tag iterator_category;
-			typedef T                         value_type;
-			typedef ptrdiff_t                 difference_type;
-			typedef const T*                  pointer;
-			typedef const T&                  reference;
+			typedef std::forward_iterator_tag iterator_category; ///< Trait stl
+			typedef T                         value_type; ///< Trait stl
+			typedef ptrdiff_t                 difference_type; ///< Trait stl
+			typedef const T*                  pointer; ///< Trait stl
+			typedef const T&                  reference; ///< Trait stl
 	
-		
+			/**
+			@brief Costruttore di default
+			Costruttore di default per istanziare un iteratore nullo.
+			**/
 			ConstBSTForwardIterator() : node(nullptr), leftdone(false) { }
 			
+			/**
+			@brief Copy constructor
+		
+			Costruttore di copia. Permette di istanziare un ConstBSTForwardIterator a partire da un'altro ConstBSTForwardIterator. 
+			@param other ConstBSTForwardIterator da usare per creare quello corrente
+			**/
 			ConstBSTForwardIterator(const ConstBSTForwardIterator &other) : node(other.node), leftdone(false) { }
-	
+			
+			/**
+			@brief Operatore di assegnamento
+			Permette la copia tra ConstBSTForwardIterator
+			@param other iteratore sorgente
+			@return riferimento a this
+			**/
 			ConstBSTForwardIterator& operator=(const ConstBSTForwardIterator &other) {
 				node = other.node;
 				leftdone = other.leftdone;
 				return *this;
 			}
-	
+			
+			/**
+			@brief Distruttore default
+			**/
 			~ConstBSTForwardIterator() { }
 	
-			// Ritorna il dato riferito dall'iteratore (dereferenziamento)
-			reference operator*() const {
+			/** 
+			@brief Ritorna il dato riferito dall'iteratore (dereferenziamento)
+			**/
+			reference operator*() const 
+			{
 				return *node->data;
 			}
-	
-			// Ritorna il puntatore al dato riferito dall'iteratore
-			pointer operator->() const {
+			
+			/**
+			@brief Ritorna il puntatore al dato riferito dall'iteratore
+			**/
+			pointer operator->() const 
+			{
 				return node->data;
 			}
 			
-			// Operatore di iterazione post-incremento
-			ConstBSTForwardIterator operator++(int) {
+			/**
+			@brief Operatore di iterazione post-incremento
+			**/
+			ConstBSTForwardIterator operator++(int)
+			{
 				ConstBSTForwardIterator tmp(*this);
 				next();
 				return tmp;
 			}
-	
-			// Operatore di iterazione pre-incremento
-			ConstBSTForwardIterator& operator++() {
+			
+			/**
+			@brief Operatore di iterazione pre-incremento
+			**/
+			ConstBSTForwardIterator& operator++()
+			{
 				next();
 				return *this;
 			}
-	
-			// Uguaglianza
-			bool operator==(const ConstBSTForwardIterator &other) const {
+			
+			/**
+			@brief Uguaglianza
+			**/
+			bool operator==(const ConstBSTForwardIterator &other) const
+			{
 				return node == other.node;
 			}
 			
-			// Diversita'
-			bool operator!=(const ConstBSTForwardIterator &other) const {
+			/**
+			@brief Diversita'
+			**/
+			bool operator!=(const ConstBSTForwardIterator &other) const 
+			{
 				return node != other.node;
 			}
 
@@ -319,16 +370,19 @@ class BST
 			// usare il costruttore di inizializzazione.
 			friend class BST<T, Comparator>; 
 			
+			/**
+			@brief Itera al prossimo nodo (in order)
+			Itera in order al prossimo nodo dell'albero.
+			Ogni qualvolta che viene chiamato l'operatore ++, viene chiamato
+			questo metodo.
+			**/
 			void next()
 			{
 				if(!node)
-				{
-					//std::cout << "BREACH\n";
 					return;
-				}
-				//std::cout << "CDATA: " << *node->data << std::endl; 
-				// If left child is not traversed, find the 
-		        // leftmost child 
+				/* Se non abbiamo ancora trovato il figlio leftmost
+		           continuiamo ad iterare
+		        */
 		        if (!leftdone) 
 		        { 
 		        	leftdone = true;
@@ -339,8 +393,7 @@ class BST
 						return;
 					}
 		        }  
-		        
-		        // If right child exists 
+		        // Se il figlio destro esiste
 		        if (node->right) 
 		        { 
 		            leftdone = false; 
@@ -353,64 +406,65 @@ class BST
 			        }  
 		            return;
 		        } 
-		  		
-		  		
-		        // If right child doesn't exist, move to father 
+		        // Se il figlio destro non esiste torno al padre
 		        else if (node->father) 
 		        { 
-		            // If this node is right child of its father, 
-		            // visit father's father first 
+		            // Se questo nodo è il figlio del proprio padre
+		            // allora visito il padre
 		            while (node->father && 
 		                   node == node->father->right) 
 		                node = node->father; 
 		            if (!node->father)
 					{ 
 		                node = nullptr;
-		                //std::cout << "AFTER-CDATA: " << *node->data << std::endl; 
 		                return;
 		            }
 		            node = node->father;
 		        }
 		        else
-		        	node = nullptr;
-		        
-		        //std::cout << "AFTER-CDATA: " << *node->data << std::endl; 
+		        	node = nullptr; 
 			}
 			
-	
-			// Costruttore privato di inizializzazione usato dalla classe container
-			// tipicamente nei metodi begin e end
+			/** 
+			@brief Costruttore privato.
+			Costruttore di inizializzazione usato dalla classe container
+			per metodi begin() e end()
+			**/
 			ConstBSTForwardIterator(const BST<T, Comparator>* p) : node(p), leftdone(false) {next();}
-			// !!! Eventuali altri metodi privati
 			
-	}; // classe ConstBSTForwardIterator
+	};
 	
 	public:
+		//Typedef
 		typedef ConstBSTForwardIterator const_iterator;
-					
-		const_iterator begin()
+		
+		/** 
+		@brief Restituisce un'iteratore che punta al primo elemento.
+		@return iteratore che itera sull'albero in order
+		**/		
+		const_iterator begin() const
 		{
 			return const_iterator(this);
 		}
 		
-		const_iterator end()
+		/** 
+		@brief Restituisce un'iteratore che indica la fine.
+		@return iteratore che indica la fine dell'iterazione
+		**/
+		const_iterator end() const
 		{
 			return const_iterator(nullptr);
 		}
 };
 
 template<typename T, typename Comparator>
-std::ostream& operator<< (std::ostream& os, const BST<T, Comparator>& elem)
+std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
 {
-	if(elem.left)
-		os << elem.left;
-	if(elem.data)
-		os << *elem.data << " ";	
-	if(elem.right)
-		os << elem.left;
+	typename BST<T, Comparator>::ConstBSTForwardIterator it;
+	it = elem.begin();
+	while(it!=elem.end())
+		os << *it << " ", it++;
 	return os;
 }
 
 #endif
-
-

@@ -103,6 +103,8 @@ int main(int argc, char** argv)
 	for(int p : vec)
 		std::cout << p << " ";
 
+	std::cout << "\nE: " << *bst << std::endl;
+
 	std::cout << "\nUsing PrintIF" << std::endl;
 	
 	struct pari
