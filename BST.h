@@ -52,7 +52,7 @@ class BST
 	private:
 		Comparator comparator; ///< Comparator per confrontare 2 elementi A e B
 		long* elements; ///< Conteggio dei discendenti totali del nodo includendo se stesso
-		T* data; ///< Puntatore al dato del nodo
+		T data; ///< Puntatore al dato del nodo
 				 ///< Ogni nodo non alloca alcuna memoria per il dato in se
 				 ///< in quanto salva l'indirizzo del dato, cio' consente 
 				 ///< all'utente di gestire il ciclo di vita dei dati salvati
@@ -74,11 +74,11 @@ class BST
 			this->data = other.data;
 			this->elements = new long(*other.elements);
 			if (other.left)
-				this->left = new BST(*(other.left), _father);
+				this->left = new BST(*(other.left), this);
 			else
 				this->left = nullptr;
 			if (other.right)
-				this->right = new BST(*(other.right), _father);
+				this->right = new BST(*(other.right), this);
 			else
 				this->right = nullptr;
 		}
@@ -92,7 +92,6 @@ class BST
 		**/
 		BST():
 			elements(new long(0)),
-			data(nullptr),
 			father(nullptr),
 			left(nullptr),
 			right(nullptr)
@@ -105,20 +104,21 @@ class BST
 		**/
 		BST(T& _data, BST* _father):
 			elements(new long(1)),
-			data(& _data),
+			data(_data),
 			father(_father),
 			left(nullptr),
 			right(nullptr)
 		{
 		}
+
 		/**
 		@brief Copy constructor.
-	
 		Copy constructor. Permette di istanziare un BST a partire da un'altro BST.
-		La copia avviene in maniera ricorsiva 
+		La copia avviene in maniera ricorsiva per i livelli inferiori ed il nodo 
+		corrente diventa il nuovo padre.
 		@param other BST da usare per creare quello corrente
 		**/
-		BST(const BST<T, Comparator>& other) //La copy constructor copia dall'alto verso in basso perche' se copiasse anche il padre rischierebbe di non mantenere la proprieta' BST
+		BST(const BST<T, Comparator>& other)
 		{
 			this->father = nullptr;
 			this->data = other.data;
@@ -145,6 +145,30 @@ class BST
 			delete this->right;
 		}
 		/**
+		@brief Nodi presenti nel BST.
+		Restituisce il numero di nodi discendenti presenti nell'albero BST
+		@return Numero di elementi dell'albero BST
+		**/
+		long total_elements() const
+		{
+			return *this->elements;
+		}
+		/**
+		@brief Visita in order dell'albero e ne stampa il contenuto.
+		Visita l'albero mediante l'iteratore della classe e stampa il contenuto
+		di tutti gli elementi.
+		@param os stream di output su cui scrivere il contenuto
+		**/
+		std::ostream& print(std::ostream& os = std::cout) const
+		{
+			ConstBSTForwardIterator it;
+			it = this->begin();
+			while(it!=this->end())
+				os << *it << " ", it++;
+			os << std::endl;
+			return os;
+		}
+		/**
 		@brief Inserisce un dato nel BST.
 		L'inserimento avviene in maniera ricorsiva in modo da mantenere la proprieta'
 		BST. Poiche' i valori uguali non sono supportati, lancia un'eccezione nel caso 
@@ -153,16 +177,17 @@ class BST
 		**/
 		void insert(T& _value)
 		{
-			if(!data) //BST vuoto
+			(*elements)++;
+			if(*this->elements==0) //BST vuoto
 			{
 				father = nullptr;
 				left = nullptr;
 				right = nullptr;
-				data = &_value;
+				data = _value;
 				std::cout << "Added " << _value << std::endl;
 				return;
 			}
-			if(comparator(_value, *data) > 0)
+			if(comparator(_value, data) > 0)
 				if(right)
 					right->insert(_value);
 				else
@@ -171,7 +196,7 @@ class BST
 					right = new BST(_value, this);
 					
 				}
-			else if(comparator(_value, *data) < 0)
+			else if(comparator(_value, data) < 0)
 				if(left)
 					left->insert(_value);
 				else
@@ -182,9 +207,8 @@ class BST
 				}
 			else
 				throw BSTDoubleElementException();
-
-			(*elements)++;
 		}
+	
 		/**
 		@brief Controlla se un elemento e' presente nel BST.
 		Il controllo avviene in maniera ricorsiva. E' necessario
@@ -195,9 +219,9 @@ class BST
 		**/
 		bool exists(const T& key) const
 		{
-			if (data && key==*data)
+			if (*this->elements==0 && key==*data)
 				return true;
-			if (data)
+			if (*this->elements==0)
 			{
 				if (comparator(key, *data) > 0 && right)
 					return right->exists(key);
@@ -225,19 +249,18 @@ class BST
 		**/
 		BST* subtree(const T& key) const
 		{
-			if (data && comparator(key, *data) == 0)
-				return new BST(*this);
-			if (data)
+			if (*this->elements!=0 && comparator(key, data)==0)
+				return new BST(*this, nullptr);
+			if (*this->elements!=0)
 			{
-				if (comparator(key, *data) > 0 && right)
+				if (comparator(key, data) > 0 && right)
 					return right->subtree(key);
 				else if (left)
 					return left->subtree(key);
 			}
-			if(!this->left && !this->right)
+			else
 				return nullptr;
 		}
-		
 		/**
 		@brief Operatore di assegnamento.
 		Permette la copia tra BST
@@ -318,7 +341,7 @@ class BST
 			**/
 			reference operator*() const 
 			{
-				return *node->data;
+				return node->data;
 			}
 			
 			/**
@@ -326,7 +349,7 @@ class BST
 			**/
 			pointer operator->() const 
 			{
-				return node->data;
+				return &node->data;
 			}
 			
 			/**
@@ -460,10 +483,7 @@ class BST
 template<typename T, typename Comparator>
 std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
 {
-	typename BST<T, Comparator>::ConstBSTForwardIterator it;
-	it = elem.begin();
-	while(it!=elem.end())
-		os << *it << " ", it++;
+	elem.print(os);
 	return os;
 }
 
