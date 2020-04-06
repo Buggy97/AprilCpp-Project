@@ -1,9 +1,9 @@
 #ifndef BST_H
 #define BST_H
-#include <exception>
-#include <iostream>
-#include <iterator> //per std::forward_iterator_tag
-#include <cstddef>  //per std::ptrdiff_t
+#include <exception> //per usare eccezioni
+#include <iostream>  //per usare cout
+#include <iterator>  //per std::forward_iterator_tag
+#include <cstddef>   //per std::ptrdiff_t
 
 /**
 @file BST.h 
@@ -13,23 +13,37 @@
 //Forward declaration per operatore << 
 template <typename T, typename Comparator> class BST;
 
-//Per evitare che vengano create classi BST per puntatori
-template <class T, typename Comparator>
-class BST<T*, Comparator>
-{
-	private:
-		BST(){}		
-};
-
 /**
 @brief Eccezione per elemento doppio inserito.
 **/
-struct BSTDoubleElementException : public std::exception
+class BSTDoubleElementException : public std::exception
 {
-	const char * what () const throw ()
-    {
-    	return "Tried to insert a duplicate element";
-    }
+	public:
+		virtual const char* what() const throw ()
+	    {
+	    	return "cannot insert duplicate item in BST";
+	    }
+};
+
+/**
+@brief Funtore di comparazione di default della classe.
+
+Funtore di comparazione default dell'albero. 
+Dati due oggetti A e B restituisce 1 se A>B, -1 se A<B, 0 se A==B
+@param T il tipo dell'oggeto
+**/
+template <typename T>
+struct _BSTdefault_comparator
+{
+	inline int operator()(const T& a, const T& b) const
+	{
+		if (a > b)
+			return  1;
+		else if (a < b)
+			return -1;
+		else
+			return 0;
+	}
 };
 
 /**
@@ -37,29 +51,26 @@ struct BSTDoubleElementException : public std::exception
 
 Classe che rappresenta un albero binario di ricerca di dati generici.
 La struttura non e' autobilanciante, spetta all'utente un inserimento appropriato
-per garantire le massime prestazioni di ricerca. La classe puo' essere costruita per 
-dati che non sono puntatori e per cui e' possibile definire un Comparator, nel caso 
-si provasse a instanziare per un dato di tipo puntatore si otterrebbe un errore di 
-compilazione. La classe non effetua alcun deallocamento dei dati salvati all'interno
-del ciascun nodo
-Sono stati implementati gli iteratori di tipo const forward_iterator
+per garantire le massime prestazioni di ricerca. La classe non effetua alcun 
+deallocamento dei dati salvati all'interno del ciascun nodo. Sono stati implementati
+gli iteratori di tipo const forward_iterator
 @param T tipo del dato
 @param Comparatore funtore di comparazione (<, >, =) di due dati, dato A e B resituisce 1 se A > B, -1 se A < B, 0 se A == B
+	   se non specificato viene usato quello di default @see _BSTdefault_comparator
 **/
-template <typename T, typename Comparator>
+template <typename T, typename Comparator = _BSTdefault_comparator<T>>
 class BST
 {				
 	private:
 		Comparator comparator; ///< Comparator per confrontare 2 elementi A e B
 		long* elements; ///< Conteggio dei discendenti totali del nodo includendo se stesso
-		T data; ///< Puntatore al dato del nodo
+		T* data; ///< Puntatore al dato del nodo
 				 ///< Ogni nodo non alloca alcuna memoria per il dato in se
 				 ///< in quanto salva l'indirizzo del dato, cio' consente 
 				 ///< all'utente di gestire il ciclo di vita dei dati salvati
 		BST* father; ///< Padre del nodo
 		BST* left; ///< Figlio sinistro del nodo
 		BST* right; ///< Figlio destro del nodo
-		
 		/**
 		@brief Costruttore di copia interno.
 
@@ -71,7 +82,7 @@ class BST
 		BST(const BST<T, Comparator>& other, BST<T, Comparator>* _father)
 		{
 			this->father = _father;
-			this->data = other.data;
+			this->data = new T(*other.data);
 			this->elements = new long(*other.elements);
 			if (other.left)
 				this->left = new BST(*(other.left), this);
@@ -83,6 +94,7 @@ class BST
 				this->right = nullptr;
 		}
 		
+
 	public:
 		/**
 		@brief Costruttore di default.
@@ -92,10 +104,12 @@ class BST
 		**/
 		BST():
 			elements(new long(0)),
+			data(nullptr),
 			father(nullptr),
 			left(nullptr),
 			right(nullptr)
 		{
+						std::cout << "Current element: " << data << std::endl;
 		}
 		/**
 		@brief Costruttore secondario.
@@ -104,11 +118,12 @@ class BST
 		**/
 		BST(const T& _data, BST* _father):
 			elements(new long(1)),
-			data(_data),
+			data(new T(_data)),
 			father(_father),
 			left(nullptr),
 			right(nullptr)
 		{
+			std::cout << "Created element " << *data << std::endl;
 		}
 
 		/**
@@ -121,7 +136,7 @@ class BST
 		BST(const BST<T, Comparator>& other)
 		{
 			this->father = nullptr;
-			this->data = other.data;
+			this->data = new T(*other.data);
 			this->elements = new long(*other.elements);
 			
 			if (other.left)
@@ -141,6 +156,7 @@ class BST
 		~BST()
 		{
 			delete this->elements;
+			delete this->data;
 			delete this->left;
 			delete this->right;
 		}
@@ -149,7 +165,7 @@ class BST
 		Restituisce il numero di nodi discendenti presenti nell'albero BST
 		@return Numero di elementi dell'albero BST
 		**/
-		long total_elements() const
+		long size() const
 		{
 			return *this->elements;
 		}
@@ -177,36 +193,42 @@ class BST
 		**/
 		void insert(const T& _value)
 		{
-			(*elements)++;
 			if(*this->elements==0) //BST vuoto
-			{
+			{	
+				std::cout << "found empty slot";
 				father = nullptr;
 				left = nullptr;
 				right = nullptr;
-				data = _value;
+				data = new T(_value);
 				std::cout << "Added " << _value << std::endl;
+				(*elements)++;
 				return;
 			}
-			if(comparator(_value, data) > 0)
+			if(comparator(_value, *data) > 0)
 				if(right)
 					right->insert(_value);
 				else
 				 {
 				 	std::cout << "Added " << _value << std::endl;
 					right = new BST(_value, this);
-					
 				}
-			else if(comparator(_value, data) < 0)
+			else if(comparator(_value, *data) < 0)
 				if(left)
 					left->insert(_value);
 				else
 				{
 					std::cout << "Added " << _value << std::endl;
 					left = new BST(_value, this);
-					
 				}
-			else
+			else if(comparator(_value, *data) == 0)
 				throw BSTDoubleElementException();
+			else
+			{
+				std::cout << "REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
+				return;
+			}
+			(*elements)++;
+
 		}
 	
 		/**
@@ -249,11 +271,11 @@ class BST
 		**/
 		BST* subtree(const T& key) const
 		{
-			if (*this->elements!=0 && comparator(key, data)==0)
+			if (*this->elements!=0 && comparator(key, *data)==0)
 				return new BST(*this, nullptr);
 			if (*this->elements!=0)
 			{
-				if (comparator(key, data) > 0 && right)
+				if (comparator(key, *data) > 0 && right)
 					return right->subtree(key);
 				else if (left)
 					return left->subtree(key);
@@ -341,7 +363,7 @@ class BST
 			**/
 			reference operator*() const 
 			{
-				return node->data;
+				return *node->data;
 			}
 			
 			/**
@@ -349,7 +371,7 @@ class BST
 			**/
 			pointer operator->() const 
 			{
-				return &node->data;
+				return &(*node->data);
 			}
 			
 			/**
@@ -413,8 +435,8 @@ class BST
 		        	{
 		            	while (node->left) 
 		                	node = node->left;
-						return;
 					}
+					return;
 		        }  
 		        // Se il figlio destro esiste
 		        if (node->right) 
@@ -485,6 +507,18 @@ std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
 {
 	elem.print(os);
 	return os;
+}
+
+template <typename T, typename Comparator, typename Predicate> 
+void printIF(BST<T, Comparator>* tree)
+{
+	Predicate predicate;
+	if(!tree)
+		return;
+	printIF<T, Comparator, Predicate>(tree->left);
+	if(tree->data && predicate(*tree->data))
+		std::cout << tree->data << " ";
+	printIF<T, Comparator, Predicate>(tree->right);
 }
 
 #endif

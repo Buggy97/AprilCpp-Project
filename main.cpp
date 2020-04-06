@@ -6,94 +6,107 @@
 #include "BST.h"
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
-void printer(const int& a)
+bool test1()
 {
-	std::cout << "called tmp";
-	int tmp = a;
-	printer(tmp);
-}
-
-void printer(int& a)
-{
-	std::cout << a << std::endl;
-}
-
-struct g
-{
-	int a;
-};
-
-struct default_comparator
-{
-	inline int operator()(const int& a, const int& b) const
+	//Ordine crescente
+	std::vector<int> vecint;
+	BST<int> bstint;
+	std::vector<int>* pvecint = new std::vector<int>();
+	BST<int>* pbstint = new BST<int>();
+	for(int i = 0; i < 10; i++)
 	{
-		if (a > b)
-			return  1;
-		else if (a < b)
-			return -1;
-		else
-			return 0;
+		vecint.push_back(i);
+		bstint.insert(i);
+		pvecint->push_back(i);
+		pbstint->insert(i);
 	}
-};
-
-struct EVEN
-{
-	inline bool operator()(const int& a) const
+	std::vector<int>::const_iterator it1 = vecint.begin();
+	BST<int>::const_iterator it2 = bstint.begin();
+	while(it1!=vecint.end()&&it2!=vecint.end())
 	{
-		if(a%2!=0)
-			return true;
+		if(*it1!=*it2)
+			return false;
+		it1++;
+		it2++;
+	}
+	//Ordine decrescente
+	std::vector<int> vecint_;
+	BST<int> bstint_;
+	std::vector<int>* pvecint_ = new std::vector<int>();
+	BST<int>* pbstint_ = new BST<int>();
+	for(int i = 10; i > 0; i--)
+	{
+		vecint_.push_back(i);
+		bstint_.insert(i);
+		pvecint_->push_back(i);
+		pbstint_->insert(i);
+	}
+	std::vector<int>::const_iterator it1_ = vecint_.begin();
+	BST<int>::const_iterator it2_ = bstint_.begin();
+	while(it1_!=vecint_.end()&&it2_!=vecint_.end())
+	{
+		if(*it1_!=*it2_)
+			return false;
+		it1_++;
+		it2_++;
+	}
+	
+	//Ordine sparso
+	std::vector<int> vecint_;
+	BST<int> bstint_;
+	std::vector<int>* pvecint_ = new std::vector<int>();
+	BST<int>* pbstint_ = new BST<int>();
+	for(int i = 10; i > 0; i--)
+	{
+		vecint_.push_back(i);
+		bstint_.insert(i);
+		pvecint_->push_back(i);
+		pbstint_->insert(i);
+	}
+	std::vector<int>::const_iterator it1_ = vecint_.begin();
+	BST<int>::const_iterator it2_ = bstint_.begin();
+	while(it1_!=vecint_.end()&&it2_!=vecint_.end())
+	{
+		if(*it1_!=*it2_)
+			return false;
+		it1_++;
+		it2_++;
+	}
+	
+	
+	vecint.push_back(999);
+	bstint.insert(999);
+	pvecint->push_back(999);
+	pbstint->insert(999);
+	
+	if(vecint.size()!=bstint.size())
 		return false;
-	}
-};
-
-template <typename T, typename Comparator, typename Predicate> 
-void printIF(BST<T, Comparator>* tree)
-{
-	Predicate predicate;
-	if(!tree)
-		return;
-	printIF<T, Comparator, Predicate>(tree->left);
-	if(tree->data && predicate(tree->data))
-		std::cout << tree->data << " ";
-	printIF<T, Comparator, Predicate>(tree->right);
+	if(pvecint->size()!=pbstint->size())
+		return false;
+		
+	delete pvecint;
+	delete pbstint;
+	delete pvecint_;
+	delete pbstint_;
+	delete pvecint__;
+	delete pbstint__;
 }
 
+bool test2()
+{
+	
+}
 
+bool test3()
+{
+	
+}
+
+bool test4()
+{
+	
+}
 
 int main(int argc, char** argv) 
 {
-	BST<int, default_comparator>* bst = new BST<int, default_comparator>();
-	
-	srand(time(NULL));
-	int vals[] = {5,2,3,4,1,8,6,9,7};
-	
-	for(int i = 0; i < 9; i++)
-	{
-		int to_add = rand()%100;
-		bst->insert(vals[i]);
-	}
-	
-	bst->print();
-	
-	int h = 22;
-	bst->insert(h);
-	bst->insert(42);
-	
-	//g j;
-	
-	//printer(22);
-	
-	printIF<int, default_comparator, EVEN>(bst);
-	
-	int g = 8;
-	BST<int, default_comparator>* sub8 = (bst->subtree(g));
-	
-	delete bst;
-	
-	std::cout << std::endl << "SUB 8: " <<*sub8 << std::endl;
-	
-	sub8->print();
-	
-	delete sub8;
-	
 }
