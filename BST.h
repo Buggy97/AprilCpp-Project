@@ -102,7 +102,7 @@ class BST
 
 		Costruttore che permette di instanziare un BST con un elemento
 		**/
-		BST(T& _data, BST* _father):
+		BST(const T& _data, BST* _father):
 			elements(new long(1)),
 			data(_data),
 			father(_father),
@@ -175,7 +175,7 @@ class BST
 		si provasse ad inserire un valore gia' presente
 		@param _value dato da inserire del tipo specificato alla definizione del BST
 		**/
-		void insert(T& _value)
+		void insert(const T& _value)
 		{
 			(*elements)++;
 			if(*this->elements==0) //BST vuoto

@@ -6,6 +6,23 @@
 #include "BST.h"
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
+void printer(const int& a)
+{
+	std::cout << "called tmp";
+	int tmp = a;
+	printer(tmp);
+}
+
+void printer(int& a)
+{
+	std::cout << a << std::endl;
+}
+
+struct g
+{
+	int a;
+};
+
 struct default_comparator
 {
 	inline int operator()(const int& a, const int& b) const
@@ -42,6 +59,7 @@ void printIF(BST<T, Comparator>* tree)
 }
 
 
+
 int main(int argc, char** argv) 
 {
 	BST<int, default_comparator>* bst = new BST<int, default_comparator>();
@@ -52,11 +70,18 @@ int main(int argc, char** argv)
 	for(int i = 0; i < 9; i++)
 	{
 		int to_add = rand()%100;
-		int* ot = new int(vals[i]);
-		bst->insert(*ot);
+		bst->insert(vals[i]);
 	}
 	
 	bst->print();
+	
+	int h = 22;
+	bst->insert(h);
+	bst->insert(42);
+	
+	//g j;
+	
+	//printer(22);
 	
 	printIF<int, default_comparator, EVEN>(bst);
 	
@@ -69,5 +94,6 @@ int main(int argc, char** argv)
 	
 	sub8->print();
 	
-	system("pause");
+	delete sub8;
+	
 }
