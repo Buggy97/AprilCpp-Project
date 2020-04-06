@@ -109,7 +109,6 @@ class BST
 			left(nullptr),
 			right(nullptr)
 		{
-						std::cout << "Current element: " << data << std::endl;
 		}
 		/**
 		@brief Costruttore secondario.
@@ -123,7 +122,6 @@ class BST
 			left(nullptr),
 			right(nullptr)
 		{
-			std::cout << "Created element " << *data << std::endl;
 		}
 
 		/**
@@ -195,12 +193,10 @@ class BST
 		{
 			if(*this->elements==0) //BST vuoto
 			{	
-				std::cout << "found empty slot";
 				father = nullptr;
 				left = nullptr;
 				right = nullptr;
 				data = new T(_value);
-				std::cout << "Added " << _value << std::endl;
 				(*elements)++;
 				return;
 			}
@@ -209,7 +205,6 @@ class BST
 					right->insert(_value);
 				else
 				 {
-				 	std::cout << "Added " << _value << std::endl;
 					right = new BST(_value, this);
 				}
 			else if(comparator(_value, *data) < 0)
@@ -217,7 +212,6 @@ class BST
 					left->insert(_value);
 				else
 				{
-					std::cout << "Added " << _value << std::endl;
 					left = new BST(_value, this);
 				}
 			else if(comparator(_value, *data) == 0)
