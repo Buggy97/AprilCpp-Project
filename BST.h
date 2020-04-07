@@ -69,7 +69,7 @@ gli iteratori di tipo const forward iterator
 @param Comparatore funtore di comparazione (<, >, =) di due dati, dato A e B resituisce >0 se A > B, <0 se A < B, 0 se A == B
 	   se non specificato viene usato quello di default. @see _BSTdefault_comparator
 **/
-template <typename T, typename Comparator = _BSTdefault_comparator<T>>
+template <typename T, typename Comparator = _BSTdefault_comparator<T> >
 class BST
 {				
 	private:
