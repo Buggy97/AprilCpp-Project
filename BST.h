@@ -516,7 +516,7 @@ std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
 	che soddisfra un particolare predicato.
 	@param T tipo del BST
 	@param Comparator scomparatore usato dal bst
-	@Predicate predicato che un dato deve soddisfare per essere stampato
+	@param Predicate predicato che un dato deve soddisfare per essere stampato
 **/
 template <typename T, typename Comparator, typename Predicate> 
 void printIF(BST<T, Comparator>* tree)
