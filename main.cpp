@@ -341,7 +341,8 @@ bool test5()
 		integerBST.insert(new Integer(i));
 	for(Integer* f : integerBST)
 		std::cout << *f << " ", delete f;
-		
+	
+
 	std::cout << std::endl;	
 	
 	return true;

@@ -8,3 +8,4 @@ aprile.o: main.cpp BST.h
 
 clean:
 	rm -rvf aprile.o aprile
+	@echo "Cleaned previous outputs!"
