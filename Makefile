@@ -1,11 +1,11 @@
-aprile: aprile.o 
-	g++ aprile.o -o aprile
+main: main.o 
+	g++ -std=c++0x main.o -o main
 	
-aprile.o: main.cpp BST.h
-	g++ -c main.cpp -o aprile.o
+main.o: main.cpp BST.h
+	g++ -std=c++0x -c main.cpp -o main.o
 
 .PHONY: clean
 
 clean:
-	rm -rvf aprile.o aprile
+	rm -rvf main.o main
 	@echo "Cleaned previous outputs!"
