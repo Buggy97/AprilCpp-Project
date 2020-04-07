@@ -142,6 +142,8 @@ bool test2()
 	for(int a : errVals)
 		if(pbstint->exists(a))
 			return false;
+	delete pvecint;
+	delete pbstint;
 	return true;
 	//TODO Test con oggetti
 }
@@ -165,7 +167,7 @@ bool test3()
 	};
 	struct pari
 	{
-		inline bool operator()(const int& a) 
+		inline bool operator()(const int& a) const
 		{
 			if(a%2==0)
 				return true;
@@ -174,7 +176,7 @@ bool test3()
 	};
 	struct maggioredi5
 	{
-		inline bool operator()(const int& a) 
+		inline bool operator()(const int& a) const
 		{
 			return a > 5;
 		}
@@ -187,6 +189,8 @@ bool test3()
 	std::cout << "Lista dei numeri pari : ";
 	printIF<int, simple_comp, pari>(pbstint);
 	std::cout << std::endl;
+	
+	delete pbstint;
 	
 	return true;
 }
@@ -248,14 +252,108 @@ bool test4()
 	for (int i : {1,2,3})
 		if(!sub3__->exists(i))
 			return false;
+	delete pvecint;
+	delete pbstint;
+	delete sub5;
+	delete sub5_;
+	delete pvecint__;
+	delete sub5__;
+	delete sub3__;
 	return true;
 }
 
+/**
+	@brief Classe di prova per test5
+**/
+struct Integer
+{
+	int random_val;
+	Integer(const int& val_)
+	{
+		random_val = val_;
+	}
+	Integer()
+	{
+		random_val = rand()%100;
+	}
+	Integer(const Integer& other)
+	{
+		random_val = other.random_val;
+	}
+	bool operator< (const Integer& other) const
+	{
+		return random_val < other.random_val;
+	}
+	bool operator> (const Integer& other) const
+	{
+		return random_val > other.random_val;
+	}
+	bool operator== (const Integer& other) const
+	{
+		return random_val == other.random_val;
+	}
+};
+
+/**
+	@brief Overloading per stampare la classe di prova
+**/
+std::ostream& operator<< (std::ostream& os, const Integer& other)
+{
+	os << other.random_val;
+	return os;
+}
+
+/**
+	@brief Test per controllo generale
+**/	
+bool test5()
+{
+	srand(time(NULL));
+	struct IntegerDescendComp
+	{
+		inline int operator()(const Integer& a, const Integer& b) const
+		{
+			if(a>b)
+				return -1;
+			if(a<b)
+				return 1;
+			if(a==b)
+				return 0;
+		}
+	};
+
+	struct IntegerDescendCompPointer
+	{
+		inline int operator()(const Integer* const a, const Integer* const b) const
+		{
+			if(*a>*b)
+				return -1;
+			if(*a<*b)
+				return 1;
+			if(*a==*b)
+				return 0;
+		}
+	};
+	BST<Integer*, IntegerDescendCompPointer> integerBST;
+	if(integerBST.size()!=0)
+		return false;
+	for(int i : {0,1,2,3,4,5,6,7,8,9})
+		integerBST.insert(new Integer(i));
+	for(Integer* f : integerBST)
+		std::cout << *f << " ", delete f;
+		
+	std::cout << std::endl;	
+	
+	return true;
+}
+
+
+
 int main(int argc, char** argv) 
 {
-	std::cout << "Test 1: " << (test1()?"PASS":"FAIL") << std::endl;
-	std::cout << "Test 2: " << (test2()?"PASS":"FAIL") << std::endl;
-	std::cout << "Test 3: " << (test3()?"PASS":"FAIL") << std::endl;
-	std::cout << "Test 4: " << (test4()?"PASS":"FAIL") << std::endl;
-
+	std::cout << "Testing insert: " << (test1()?"PASS":"FAIL") << std::endl;
+	std::cout << "Testing exist: " << (test2()?"PASS":"FAIL") << std::endl;
+	std::cout << "Testing << and printIF: " << (test3()?"PASS":"FAIL") << std::endl;
+	std::cout << "Test subtree: " << (test4()?"PASS":"FAIL") << std::endl;
+	std::cout << "Test mixed: " << (test5()?"PASS":"FAIL") << std::endl;
 }

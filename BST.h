@@ -63,23 +63,19 @@ struct _BSTdefault_comparator
 
 Classe che rappresenta un albero binario di ricerca di dati generici.
 La struttura non e' autobilanciante, spetta all'utente un inserimento appropriato
-per garantire le massime prestazioni di ricerca. La classe non effetua alcun 
-deallocamento dei dati salvati all'interno del ciascun nodo. Sono stati implementati
-gli iteratori di tipo const forward_iterator
+per garantire le massime prestazioni di ricerca. Sono stati implementati
+gli iteratori di tipo const forward iterator
 @param T tipo del dato
-@param Comparatore funtore di comparazione (<, >, =) di due dati, dato A e B resituisce 1 se A > B, -1 se A < B, 0 se A == B
-	   se non specificato viene usato quello di default @see _BSTdefault_comparator
+@param Comparatore funtore di comparazione (<, >, =) di due dati, dato A e B resituisce >0 se A > B, <0 se A < B, 0 se A == B
+	   se non specificato viene usato quello di default. @see _BSTdefault_comparator
 **/
 template <typename T, typename Comparator = _BSTdefault_comparator<T>>
 class BST
 {				
 	private:
-		Comparator comparator; ///< Comparator per confrontare 2 elementi A e B
+	    static Comparator comparator; ///< Comparator per confrontare 2 elementi A e B
 		long* elements; ///< Conteggio dei discendenti totali del nodo includendo se stesso
-		T* data; ///< Puntatore al dato del nodo
-				 ///< Ogni nodo non alloca alcuna memoria per il dato in se
-				 ///< in quanto salva l'indirizzo del dato, cio' consente 
-				 ///< all'utente di gestire il ciclo di vita dei dati salvati
+		T* data; ///< Puntatore al dato del nodo 
 		BST* father; ///< Padre del nodo
 		BST* left; ///< Figlio sinistro del nodo
 		BST* right; ///< Figlio destro del nodo
@@ -161,7 +157,6 @@ class BST
 		/**
 		@brief Distruttore.
 		Rimuove la memoria allocata dal BST.
-		Il dato del nodo non viene eliminato poiche' e' una reference
 		**/
 		~BST()
 		{
@@ -281,7 +276,7 @@ class BST
 					return left->subtree(key);
 			}
 			else
-				throw nullptr;
+				return nullptr;
 		}
 		/**
 		@brief Operatore di assegnamento.
@@ -498,13 +493,23 @@ class BST
 		}
 };
 
+/**
+	@brief Inizializza il funtore di comparazione statico.
+		   Questo permette di avere un'unica istanza del comparatore
+		   per classe.
+**/
+template<typename T, typename Comparator> Comparator BST<T, Comparator>::comparator;
+
+/**
+	@brief Overloading dell'operatore <<.
+		   Permette di stampare il contenuto in order dell'albero.
+**/
 template<typename T, typename Comparator>
 std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
 {
 	elem.print(os);
 	return os;
 }
-
 /**
 	@brief Funzione globale printIF
 	Funzione che stampa il contenuto dell'albero BST
