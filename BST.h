@@ -26,10 +26,22 @@ class BSTDoubleElementException : public std::exception
 };
 
 /**
+@brief Eccezione sottoalbero non presente.
+**/
+class BSTNonExistentTreeException : public std::exception
+{
+	public:
+		virtual const char* what() const throw ()
+	    {
+	    	return "connot find subtree for non existent element";
+	    }
+};
+
+/**
 @brief Funtore di comparazione di default della classe.
 
 Funtore di comparazione default dell'albero. 
-Dati due oggetti A e B restituisce 1 se A>B, -1 se A<B, 0 se A==B
+Dati due oggetti A e B restituisce >0 se A>B, <0 se A<B, 0 se A==B
 @param T il tipo dell'oggeto
 **/
 template <typename T>
@@ -235,25 +247,19 @@ class BST
 		**/
 		bool exists(const T& key) const
 		{
-			if (*this->elements==0 && key==*data)
-				return true;
-			if (*this->elements==0)
-			{
-				if (comparator(key, *data) > 0 && right)
-					return right->exists(key);
-				else if (left)
-					return left->exists(key);
+			if(*this->elements==0) //Caso in cui BST e' vuoto
 				return false;
-			}
-			else 
+			if(comparator(key, *data)==0) //Ho trovato l'elemento
+				return true;
+			else if(comparator(key, *data) > 0) //Maggiore del nodo corrente
 			{
-				bool ret = false;
-				if(right)
-					ret = ret || right->exists(key);
-				if(left)
-					ret = ret || left ->exists(key);
-				return ret;
+				if(this->right)
+					return this->right->exists(key);
 			}
+			else if(comparator(key, *data) < 0)
+				if(this->left)
+					return this->left->exists(key);
+			return false;
 		}
 		
 		/**
@@ -263,7 +269,7 @@ class BST
 		@param key dato della radice del sottoalbero
 		@return Riferimento al nuovo sottoalbero, null se il valore non è presente
 		**/
-		BST* subtree(const T& key) const
+		BST<T, Comparator>* subtree(const T& key) const
 		{
 			if (*this->elements!=0 && comparator(key, *data)==0)
 				return new BST(*this, nullptr);
@@ -275,7 +281,7 @@ class BST
 					return left->subtree(key);
 			}
 			else
-				return nullptr;
+				throw nullptr;
 		}
 		/**
 		@brief Operatore di assegnamento.
@@ -297,11 +303,7 @@ class BST
 			}
 			return *this;
 		}
-	
-	//Dichiarazione friend per printIF			
-	template <typename Q, typename G, typename Predicate> 
-	friend void printIF(BST<Q, G>* tree);
-	
+		
 	/**
 	@brief Iteratore costante per albero BST.
 	
@@ -503,16 +505,40 @@ std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
 	return os;
 }
 
+/**
+	@brief Funzione globale printIF
+	Funzione che stampa il contenuto dell'albero BST
+	che soddisfra un particolare predicato.
+	@param T tipo del BST
+	@param Comparator scomparatore usato dal bst
+	@Predicate predicato che un dato deve soddisfare per essere stampato
+**/
 template <typename T, typename Comparator, typename Predicate> 
 void printIF(BST<T, Comparator>* tree)
 {
 	Predicate predicate;
-	if(!tree)
-		return;
-	printIF<T, Comparator, Predicate>(tree->left);
-	if(tree->data && predicate(*tree->data))
-		std::cout << tree->data << " ";
-	printIF<T, Comparator, Predicate>(tree->right);
+	typename BST<T, Comparator>::const_iterator it = tree->begin();
+	while(it!=tree->end())
+	{
+		if(predicate(*it))
+			std::cout << *it << " ";
+		it++;
+	}
 }
-
+/**
+	@brief Overloading della funzione globale printIF
+	@see printIF
+**/
+template <typename T, typename Comparator, typename Predicate> 
+void printIF(const BST<T, Comparator>& tree)
+{
+	Predicate predicate;
+	typename BST<T, Comparator>::const_iterator it = tree.begin();
+	while(it!=tree->end())
+	{
+		if(predicate(*it))
+			std::cout << *it << " ";
+		it++;
+	}
+}
 #endif
