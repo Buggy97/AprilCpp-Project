@@ -352,6 +352,7 @@ bool test5()
 
 int main(int argc, char** argv) 
 {
+	std::cout << "Progetto C++ Aprile Farjad Ali 829940" << std::cout;
 	std::cout << "Testing insert: " << (test1()?"PASS":"FAIL") << std::endl;
 	std::cout << "Testing exist: " << (test2()?"PASS":"FAIL") << std::endl;
 	std::cout << "Testing << and printIF: " << (test3()?"PASS":"FAIL") << std::endl;
