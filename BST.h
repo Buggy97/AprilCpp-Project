@@ -259,7 +259,7 @@ class BST
 		{
 			if (*this->elements!=0 && comparator(key, *data)==0)
 				return new BST(*this);
-			if (*this->elements!=0)
+			else if (*this->elements!=0)
 			{
 				if (comparator(key, *data) > 0 && right) //Maggiore del nodo corrente
 					return right->subtree(key);		
@@ -281,11 +281,20 @@ class BST
 		{
 			if(&other != this)
 			{
-				this->elements = other.elements;
-				this->data = other.data;
-				this->father = other.father;
-				this->left = other.left;
-				this->right = other.right;
+				this->father = nullptr;
+				if(other.data)
+					this->data = new T(*other.data);
+				else
+					this->data = nullptr;
+				this->elements = new long(*other.elements);
+				if (other.left)
+					this->left = new BST(*(other.left), this);
+				else
+					this->left = nullptr;
+				if (other.right)
+					this->right = new BST(*(other.right), this);
+				else
+					this->right = nullptr;
 			}
 			return *this;
 		}

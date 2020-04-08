@@ -317,9 +317,9 @@ bool test5()
 		{
 			if(a>b)
 				return -1;
-			if(a<b)
+			else if(a<b)
 				return 1;
-			if(a==b)
+			else
 				return 0;
 		}
 	};
@@ -330,9 +330,9 @@ bool test5()
 		{
 			if(*a>*b)
 				return -1;
-			if(*a<*b)
+			else if(*a<*b)
 				return 1;
-			if(*a==*b)
+			else
 				return 0;
 		}
 	};
@@ -375,13 +375,13 @@ bool test5()
 	if(!intBST_.exists(42))
 		return false;
 		
-	for(auto a : {1,2,3,4,5,6,7,8,9})
+	srand(time(NULL));	
+	for(int i = 0; i < 10; i++)
 	{
-		auto val = rand()%100;
+		int val = rand()%100;
 		if(val!=42 && intBST_.exists(val))
 			return false;
 	}
-	
 	return true;
 }
 
