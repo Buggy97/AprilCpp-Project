@@ -26,18 +26,6 @@ class BSTDoubleElementException : public std::exception
 };
 
 /**
-@brief Eccezione sottoalbero non presente.
-**/
-class BSTNonExistentTreeException : public std::exception
-{
-	public:
-		virtual const char* what() const throw ()
-	    {
-	    	return "connot find subtree for non existent element";
-	    }
-};
-
-/**
 @brief Funtore di comparazione di default della classe.
 
 Funtore di comparazione default dell'albero. 
@@ -208,28 +196,24 @@ class BST
 				return;
 			}
 			if(comparator(_value, *data) > 0)
+			{
 				if(right)
 					right->insert(_value);
 				else
-				 {
 					right = new BST(_value, this);
-				}
+			}
 			else if(comparator(_value, *data) < 0)
+			{
 				if(left)
 					left->insert(_value);
 				else
-				{
 					left = new BST(_value, this);
-				}
+			}
 			else if(comparator(_value, *data) == 0)
 				throw BSTDoubleElementException();
 			else
-			{
-				std::cout << "REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
 				return;
-			}
 			(*elements)++;
-
 		}
 	
 		/**
@@ -294,7 +278,6 @@ class BST
 				this->father = other.father;
 				this->left = other.left;
 				this->right = other.right;
-				this->beg = other.beg;
 			}
 			return *this;
 		}
@@ -519,27 +502,11 @@ std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
 	@param Predicate predicato che un dato deve soddisfare per essere stampato
 **/
 template <typename T, typename Comparator, typename Predicate> 
-void printIF(BST<T, Comparator>* tree)
-{
-	Predicate predicate;
-	typename BST<T, Comparator>::const_iterator it = tree->begin();
-	while(it!=tree->end())
-	{
-		if(predicate(*it))
-			std::cout << *it << " ";
-		it++;
-	}
-}
-/**
-	@brief Overloading della funzione globale printIF
-	@see printIF
-**/
-template <typename T, typename Comparator, typename Predicate> 
 void printIF(const BST<T, Comparator>& tree)
 {
 	Predicate predicate;
 	typename BST<T, Comparator>::const_iterator it = tree.begin();
-	while(it!=tree->end())
+	while(it!=tree.end())
 	{
 		if(predicate(*it))
 			std::cout << *it << " ";
