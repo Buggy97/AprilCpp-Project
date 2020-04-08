@@ -161,7 +161,8 @@ void MainWindow::table2Clicked(const QModelIndex& i)
 void MainWindow::processEntry(QString entry, QTableWidget* table, QMap<QString, int>& map)
 {
     QString rawLink = entry.split(" ")[0];
-    QString sublink = rawLink.right(rawLink.length()-rawLink.lastIndexOf("wiki")).chopped(1);
+    QString sublink = rawLink.right(rawLink.length()-rawLink.lastIndexOf("wiki"));
+    sublink.chop(1);
     QString wikiLink;
     if(sublink.length()<=5)
         wikiLink = "Nessun link disponibile";
