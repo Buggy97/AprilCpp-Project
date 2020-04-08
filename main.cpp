@@ -165,6 +165,7 @@ bool test3()
 				return 0;
 		}
 	};
+	
 	struct pari
 	{
 		inline bool operator()(const int& a) const
@@ -174,6 +175,8 @@ bool test3()
 			return false;
 		}
 	};
+	
+	
 	struct maggioredi5
 	{
 		inline bool operator()(const int& a) const
@@ -342,8 +345,43 @@ bool test5()
 	for(Integer* f : integerBST)
 		std::cout << *f << " ", delete f;
 	
-
-	std::cout << std::endl;	
+	BST<Integer> intBST_;
+	
+	BST<Integer> newbst = intBST_;
+	
+	if(newbst.size()!=intBST_.size())
+		return false;
+	
+	newbst = intBST_;
+	
+	if(newbst.size()!=intBST_.size())
+		return false;	
+	intBST_.insert(Integer(42));
+	
+	auto it_ = intBST_.begin();
+	BST<Integer>::const_iterator g = it_;
+	it_++;
+	std::cout << std::endl;
+	
+	if(it_!=intBST_.end())
+		std::cout << "Iterator assignement check: " << *it_ << std::endl;
+	else
+		std::cout << "Iterator assignement check: " << "nullptr" << std::endl;	
+			
+	std::cout << "Iterator assignement check: " << *g << std::endl;	
+	
+	for(Integer a : intBST_)
+		std::cout << "single item check: " << a << std::endl;
+		
+	if(!intBST_.exists(42))
+		return false;
+		
+	for(auto a : {1,2,3,4,5,6,7,8,9})
+	{
+		auto val = rand()%100;
+		if(val!=42 && intBST_.exists(val))
+			return false;
+	}
 	
 	return true;
 }
