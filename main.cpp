@@ -159,10 +159,9 @@ bool test3()
 		{
 			if(a > b)
 				return 1;
-			if(a < b)
+			else if(a < b)
 				return -1;
-			if(a == b)
-				return 0;
+			return 0;
 		}
 	};
 	
