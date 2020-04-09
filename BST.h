@@ -67,6 +67,7 @@ class BST
 		BST* father; ///< Padre del nodo
 		BST* left; ///< Figlio sinistro del nodo
 		BST* right; ///< Figlio destro del nodo
+		
 		/**
 		@brief Costruttore di copia interno.
 
@@ -147,6 +148,7 @@ class BST
 			else
 				this->right = nullptr;
 		}
+		
 		/**
 		@brief Distruttore.
 		Rimuove la memoria allocata dal BST.
@@ -158,6 +160,7 @@ class BST
 			delete this->left;
 			delete this->right;
 		}
+		
 		/**
 		@brief Nodi presenti nel BST.
 		Restituisce il numero di nodi discendenti presenti nell'albero BST
@@ -167,6 +170,7 @@ class BST
 		{
 			return *this->elements;
 		}
+		
 		/**
 		@brief Visita in order dell'albero e ne stampa il contenuto.
 		Visita l'albero mediante l'iteratore della classe e stampa il contenuto
@@ -182,6 +186,7 @@ class BST
 			os << std::endl;
 			return os;
 		}
+		
 		/**
 		@brief Inserisce un dato nel BST.
 		L'inserimento avviene in maniera ricorsiva in modo da mantenere la proprieta'
@@ -252,9 +257,7 @@ class BST
 		sottoalbero.
 		@param key dato della radice del sottoalbero
 		@return Riferimento al nuovo sottoalbero, null se il valore non è presente
-		**/
-		
-		
+		**/	
 		BST<T, Comparator>* subtree(const T& key) const
 		{
 			if (*this->elements!=0 && comparator(key, *data)==0)
