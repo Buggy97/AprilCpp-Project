@@ -26,7 +26,7 @@ void FileDownloader::doDownload()
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
             this, SLOT(downloadProgress(qint64, qint64)));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            this, SLOT(error(QNetworkReply::NetworkError)));
+            this, SLOT(error()));
     connect(reply, SIGNAL(sslErrors(const QList<QSslError>&)),
             this, SLOT(sslErrors(const QList<QSslError>&)));
 }
@@ -36,10 +36,11 @@ void FileDownloader::abort()
     if(downloading)
     {
         disconnect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));
+                this, SLOT(error()));
         disconnect(reply, SIGNAL(sslErrors(const QList<QSslError>&)),
                 this, SLOT(sslErrors(const QList<QSslError>&)));
-        reply->close();
+        if(!reply->open(QIODevice::NotOpen))
+            reply->close();
         delete reply;
         reply = nullptr;
     }
@@ -61,7 +62,7 @@ void FileDownloader::downloadProgress(qint64 ist, qint64 max)
     emit progressUpdate(ist, max);
 }
 
-void FileDownloader::error(QNetworkReply::NetworkError e)
+void FileDownloader::error()
 {
     downloading = false;
     emit gotError(this->file.url(), reply->errorString());

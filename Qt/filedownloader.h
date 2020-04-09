@@ -26,7 +26,7 @@ class FileDownloader : public QObject
  private slots:
   void fileDownloaded(QNetworkReply* pReply);
   void downloadProgress(qint64, qint64);
-  void error(QNetworkReply::NetworkError);
+  void error();
   void sslErrors(const QList<QSslError> &);
 
  private:
