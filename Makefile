@@ -7,5 +7,5 @@ main.o: main.cpp BST.h
 .PHONY: clean
 
 clean:
-	rm -rvf main.o main
-	@echo "Cleaned previous outputs!"
+	rm -rf main.o main
+	@echo "removed all previous build files!"

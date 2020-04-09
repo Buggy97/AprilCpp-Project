@@ -336,16 +336,18 @@ bool test5()
 				return 0;
 		}
 	};
+	
 	BST<Integer*, IntegerDescendCompPointer> integerBST;
+	
 	if(integerBST.size()!=0)
 		return false;
+		
 	for(int i : {0,1,2,3,4,5,6,7,8,9})
 		integerBST.insert(new Integer(i));
 	for(Integer* f : integerBST)
 		std::cout << *f << " ", delete f;
 	
 	BST<Integer> intBST_;
-	
 	BST<Integer> newbst = intBST_;
 	
 	if(newbst.size()!=intBST_.size())
@@ -353,11 +355,12 @@ bool test5()
 	
 	newbst = intBST_;
 	
+
 	if(newbst.size()!=intBST_.size())
 		return false;	
 	intBST_.insert(Integer(42));
 	
-	auto it_ = intBST_.begin();
+	BST<Integer>::const_iterator it_ = intBST_.begin();
 	BST<Integer>::const_iterator g = it_;
 	it_++;
 	std::cout << std::endl;

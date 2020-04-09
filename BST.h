@@ -67,7 +67,6 @@ class BST
 		BST* father; ///< Padre del nodo
 		BST* left; ///< Figlio sinistro del nodo
 		BST* right; ///< Figlio destro del nodo
-		
 		/**
 		@brief Costruttore di copia interno.
 
@@ -133,6 +132,7 @@ class BST
 		**/
 		BST(const BST<T, Comparator>& other)
 		{
+			std::cout << "\nCalled cctor\n";
 			this->father = nullptr;
 			if(other.data)
 				this->data = new T(*other.data);
@@ -148,7 +148,6 @@ class BST
 			else
 				this->right = nullptr;
 		}
-		
 		/**
 		@brief Distruttore.
 		Rimuove la memoria allocata dal BST.
@@ -160,7 +159,6 @@ class BST
 			delete this->left;
 			delete this->right;
 		}
-		
 		/**
 		@brief Nodi presenti nel BST.
 		Restituisce il numero di nodi discendenti presenti nell'albero BST
@@ -170,7 +168,6 @@ class BST
 		{
 			return *this->elements;
 		}
-		
 		/**
 		@brief Visita in order dell'albero e ne stampa il contenuto.
 		Visita l'albero mediante l'iteratore della classe e stampa il contenuto
@@ -186,7 +183,6 @@ class BST
 			os << std::endl;
 			return os;
 		}
-		
 		/**
 		@brief Inserisce un dato nel BST.
 		L'inserimento avviene in maniera ricorsiva in modo da mantenere la proprieta'
@@ -257,7 +253,9 @@ class BST
 		sottoalbero.
 		@param key dato della radice del sottoalbero
 		@return Riferimento al nuovo sottoalbero, null se il valore non è presente
-		**/	
+		**/
+		
+		
 		BST<T, Comparator>* subtree(const T& key) const
 		{
 			if (*this->elements!=0 && comparator(key, *data)==0)
@@ -281,22 +279,18 @@ class BST
 		**/
 		BST<T, Comparator>& operator=(const BST<T, Comparator>& other)
 		{
+			std::cout << "assignment op\n";
 			if(&other != this)
 			{
-				this->father = nullptr;
-				if(other.data)
-					this->data = new T(*other.data);
-				else
-					this->data = nullptr;
-				this->elements = new long(*other.elements);
-				if (other.left)
-					this->left = new BST(*(other.left), this);
-				else
-					this->left = nullptr;
-				if (other.right)
-					this->right = new BST(*(other.right), this);
-				else
-					this->right = nullptr;
+				//Copio other in oggetto temporaneo ed effettuo lo swap sui membri
+				//in questo modo i membri di questo oggetto verranno deallocati alla
+				//uscita dello scope
+				BST<T, Comparator> other_tmp(other);
+				std::swap(this->father, other_tmp.father);
+				std::swap(this->data, other_tmp.data);
+				std::swap(this->left, other_tmp.left);
+				std::swap(this->right, other_tmp.right);
+				std::swap(this->elements, other_tmp.elements);
 			}
 			return *this;
 		}
