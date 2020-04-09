@@ -179,9 +179,9 @@ class BST
 		**/
 		std::ostream& print(std::ostream& os = std::cout) const
 		{
-			ConstBSTForwardIterator it;
-			it = this->begin();
-			while(it!=this->end())
+			ConstBSTForwardIterator it = this->begin();;
+			ConstBSTForwardIterator it_end = this->end();
+			while(it!=it_end)
 				os << *it << " ", it++;
 			os << std::endl;
 			return os;
@@ -528,7 +528,8 @@ void printIF(const BST<T, Comparator>& tree)
 {
 	Predicate predicate;
 	typename BST<T, Comparator>::const_iterator it = tree.begin();
-	while(it!=tree.end())
+	typename BST<T, Comparator>::const_iterator it_end = tree.end();
+	while(it!=it_end)
 	{
 		if(predicate(*it))
 			std::cout << *it << " ";
