@@ -49,7 +49,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideMiddle</enum>
@@ -219,13 +219,6 @@
         </item>
         <item row="3" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QPushButton" name="abortBtn">
-            <property name="text">
-             <string>Anulla</string>
-            </property>
-           </widget>
-          </item>
           <item>
            <widget class="QPushButton" name="fetchBtn">
             <property name="text">

@@ -20,8 +20,11 @@ void FileDownloader::doDownload()
 {
     if(downloading)
         abort();
+
     QNetworkRequest request(file);
     downloading = true;
+    accMan.clearAccessCache();
+    accMan.clearConnectionCache();
     reply = accMan.get(request);
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
             this, SLOT(downloadProgress(qint64, qint64)));
@@ -43,6 +46,7 @@ void FileDownloader::abort()
             reply->close();
         delete reply;
         reply = nullptr;
+        downloading = false;
     }
 }
 
@@ -65,13 +69,13 @@ void FileDownloader::downloadProgress(qint64 ist, qint64 max)
 void FileDownloader::error()
 {
     downloading = false;
-    emit gotError(this->file.url(), reply->errorString());
+    emit gotError(file.url(), reply->errorString());
     reply->deleteLater();
 }
 void FileDownloader::sslErrors(const QList<QSslError>& e)
 {
     downloading = false;
-    emit gotSslErrors(this->file.url(), e);
+    emit gotSslErrors(file.url(), e);
     reply->deleteLater();
 }
 

@@ -27,7 +27,6 @@ HEADERS += \
     mainwindow.h
 
 FORMS += \
-    dialogdownload.ui \
     mainwindow.ui
 
 # Default rules for deployment.

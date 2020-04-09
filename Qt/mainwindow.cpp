@@ -43,11 +43,11 @@ MainWindow::MainWindow(QWidget *parent)
               this, SLOT(table2Clicked(const QModelIndex&)));
       ui->tableUniversal->setEditTriggers(QAbstractItemView::NoEditTriggers);
       ui->tableEMI->setEditTriggers(QAbstractItemView::NoEditTriggers);
-      this->ui->firstFileProgress->reset();
-      this->ui->secondFileProgress->reset();
-      this->ui->textBrowser->append("Sto recuperando i file...");
-      this->ui->textBrowser->append("Sto scaricando il file " + file1 + " ...");
-      this->ui->textBrowser->append("Sto scaricando il file " + file2 + " ...");
+      ui->firstFileProgress->reset();
+      ui->secondFileProgress->reset();
+      ui->textBrowser->append("Sto recuperando i file...");
+      ui->textBrowser->append("Sto scaricando il file " + file1 + " ...");
+      ui->textBrowser->append("Sto scaricando il file " + file2 + " ...");
       fd1->doDownload();
       fd2->doDownload();
 }
@@ -62,13 +62,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_fetchBtn_clicked()
 {
-    this->file1Ready = false;
-    this->file2Ready = false;
-    this->ui->firstFileProgress->reset();
-    this->ui->secondFileProgress->reset();
-    this->ui->textBrowser->append("\n\nSto recuperando i file...");
-    this->ui->textBrowser->append("Sto scaricando il file " + file1 + " ...");
-    this->ui->textBrowser->append("Sto scaricando il file " + file2 + " ...");
+    file1Ready = false;
+    file2Ready = false;
+    ui->firstFileProgress->reset();
+    ui->secondFileProgress->reset();
+    ui->textBrowser->append("\n\nSto recuperando i file...");
+    ui->textBrowser->append("Sto scaricando il file " + file1 + " ...");
+    ui->textBrowser->append("Sto scaricando il file " + file2 + " ...");
     fd1->doDownload();
     fd2->doDownload();
 }
@@ -86,30 +86,30 @@ void MainWindow::progressUpdate2(qint64 ist, qint64 max)
 }
 void MainWindow::downloadedFile1()
 {
-    this->ui->textBrowser->setTextColor(QColor("GREEN"));
-    this->ui->textBrowser->append("File  " + file1 + " scaricato!");
-    this->ui->textBrowser->setTextColor(QColor("BLACK"));
+    ui->textBrowser->setTextColor(QColor("GREEN"));
+    ui->textBrowser->append("File  " + file1 + " scaricato!");
+    ui->textBrowser->setTextColor(QColor("BLACK"));
     file1Ready = true;
     if(file2Ready)
     {
-        this->ui->textBrowser->setTextColor(QColor("GREEN"));
-        this->ui->textBrowser->append("\nTutti i file sono stati scaricati!");
-        this->ui->textBrowser->setTextColor(QColor("BLACK"));
+        ui->textBrowser->setTextColor(QColor("GREEN"));
+        ui->textBrowser->append("\nTutti i file sono stati scaricati!");
+        ui->textBrowser->setTextColor(QColor("BLACK"));
         enableTabWidgets();
         displayData();
     }
 }
 void MainWindow::downloadedFile2()
 {
-    this->ui->textBrowser->setTextColor(QColor("GREEN"));
-    this->ui->textBrowser->append("File  " + file2 + " scaricato!");
-    this->ui->textBrowser->setTextColor(QColor("BLACK"));
+    ui->textBrowser->setTextColor(QColor("GREEN"));
+    ui->textBrowser->append("File  " + file2 + " scaricato!");
+    ui->textBrowser->setTextColor(QColor("BLACK"));
     file2Ready = true;
     if(file1Ready)
     {
-        this->ui->textBrowser->setTextColor(QColor("GREEN"));
-        this->ui->textBrowser->append("\nTutti i file sono stati scaricati!");
-        this->ui->textBrowser->setTextColor(QColor("BLACK"));
+        ui->textBrowser->setTextColor(QColor("GREEN"));
+        ui->textBrowser->append("\nTutti i file sono stati scaricati!");
+        ui->textBrowser->setTextColor(QColor("BLACK"));
         enableTabWidgets();
         displayData();
     }
@@ -117,43 +117,37 @@ void MainWindow::downloadedFile2()
 
 void MainWindow::gotError(QString file, QString e)
 {
-    this->ui->tabWidget->setCurrentIndex(5);
-    this->ui->textBrowser->setTextColor(QColor("RED"));
-    this->ui->textBrowser->append("File  " + file + ":");
-    this->ui->textBrowser->append("Errore di rete: " + e + "");
-    this->ui->textBrowser->setTextColor(QColor("BLACK"));
+    ui->tabWidget->setCurrentIndex(5);
+    ui->textBrowser->setTextColor(QColor("RED"));
+    ui->textBrowser->append("File  " + file + ":");
+    ui->textBrowser->append("Errore di rete: " + e + "");
+    ui->textBrowser->setTextColor(QColor("BLACK"));
 }
 void MainWindow::gotSslErrors(QString file, const QList<QSslError>& e)
 {
-    this->ui->tabWidget->setCurrentIndex(5);
-    this->ui->textBrowser->setTextColor(QColor("RED"));
-    this->ui->textBrowser->append("File  " + file + ":");
-    this->ui->textBrowser->append("Errore SSL: ");
+    ui->tabWidget->setCurrentIndex(5);
+    ui->textBrowser->setTextColor(QColor("RED"));
+    ui->textBrowser->append("File  " + file + ":");
+    ui->textBrowser->append("Errore SSL: ");
     QList<QSslError>::const_iterator it = e.begin();
     while(it!=e.end())
     {
-        this->ui->textBrowser->append(it->errorString()+"\n");
+        ui->textBrowser->append(it->errorString()+"\n");
         it++;
     }
-    this->ui->textBrowser->setTextColor(QColor("BLACK"));
-}
-
-void MainWindow::on_abortBtn_clicked()
-{
-    this->fd1->abort();
-    this->fd2->abort();
+    ui->textBrowser->setTextColor(QColor("BLACK"));
 }
 
 void MainWindow::table1Clicked(const QModelIndex& i)
 {
-    QString url = this->ui->tableUniversal->item(i.row(), 1)->text();
+    QString url = ui->tableUniversal->item(i.row(), 1)->text();
     if(url.indexOf("https")!=-1)
         QDesktopServices::openUrl(url);
 }
 
 void MainWindow::table2Clicked(const QModelIndex& i)
 {
-    QString url = this->ui->tableEMI->item(i.row(), 1)->text();
+    QString url = ui->tableEMI->item(i.row(), 1)->text();
     if(url.indexOf("https")!=-1)
         QDesktopServices::openUrl(url);
 }
@@ -254,30 +248,30 @@ QtCharts::QChart* MainWindow::getSecondChart(const int quantity1,
 
 void MainWindow::enableTabWidgets()
 {
-    this->ui->tableUniversal->setEnabled(true);
-    this->ui->tableEMI->setEnabled(true);
-    this->ui->chartUniversal->setEnabled(true);
-    this->ui->chartEMI->setEnabled(true);
-    this->ui->chartCompare->setEnabled(true);
+    ui->tableUniversal->setEnabled(true);
+    ui->tableEMI->setEnabled(true);
+    ui->chartUniversal->setEnabled(true);
+    ui->chartEMI->setEnabled(true);
+    ui->chartCompare->setEnabled(true);
 }
 
 void MainWindow::displayData()
 {
-    this->ui->tableUniversal->setRowCount(0);
-    this->ui->tableEMI->setRowCount(0);
-    QString* tmp1 = new QString(this->fd1->downloadedData());
-    QString* tmp2 = new QString(this->fd2->downloadedData());
+    ui->tableUniversal->setRowCount(0);
+    ui->tableEMI->setRowCount(0);
+    QString* tmp1 = new QString(fd1->downloadedData());
+    QString* tmp2 = new QString(fd2->downloadedData());
     QStringList* f1Data = new QStringList(tmp1->split("\n"));
     QStringList* f2Data = new QStringList(tmp2->split("\n"));
     QMap<QString, int> uniArtistPerLetter;
     QMap<QString, int> emiArtistPerLetter;
     foreach(QString entry, *f1Data)
-        processEntry(entry, this->ui->tableUniversal, uniArtistPerLetter);
+        processEntry(entry, ui->tableUniversal, uniArtistPerLetter);
     foreach(QString entry, *f2Data)
-        processEntry(entry, this->ui->tableEMI, emiArtistPerLetter);
-    this->ui->chartUniversal->setChart(getChart("Artisti universal", uniArtistPerLetter));
-    this->ui->chartEMI->setChart(getChart("Artisti EMI", emiArtistPerLetter));
-    this->ui->chartCompare->setChart(getSecondChart(f1Data->length(), f2Data->length()));
+        processEntry(entry, ui->tableEMI, emiArtistPerLetter);
+    ui->chartUniversal->setChart(getChart("Artisti universal", uniArtistPerLetter));
+    ui->chartEMI->setChart(getChart("Artisti EMI", emiArtistPerLetter));
+    ui->chartCompare->setChart(getSecondChart(f1Data->length(), f2Data->length()));
     delete f2Data;
     delete f1Data;
     delete tmp2;

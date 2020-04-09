@@ -28,7 +28,6 @@ private slots:
     void downloadedFile2();
     void table1Clicked(const QModelIndex&);
     void table2Clicked(const QModelIndex&);
-    void on_abortBtn_clicked();
 
 
 private:
