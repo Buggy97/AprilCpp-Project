@@ -78,7 +78,10 @@ class BST
 		BST(const BST<T, Comparator>& other, BST<T, Comparator>* _father)
 		{
 			this->father = _father;
-			this->data = new T(*other.data);
+			if(other.data)
+				this->data = new T(*other.data);
+			else
+				this->data = nullptr;
 			this->elements = new long(*other.elements);
 			if (other.left)
 				this->left = new BST(*(other.left), this);
@@ -89,7 +92,20 @@ class BST
 			else
 				this->right = nullptr;
 		}
-		
+		/**
+		@brief Costruttore secondario.
+
+		Costruttore che permette di instanziare un BST con un elemento.
+		Viene usato dal operazione di inserimento.
+		**/
+		BST(const T& _data, BST* _father):
+			elements(new long(1)),
+			data(new T(_data)),
+			father(_father),
+			left(nullptr),
+			right(nullptr)
+		{
+		}
 
 	public:
 		/**
@@ -106,19 +122,6 @@ class BST
 			right(nullptr)
 		{
 		}
-		/**
-		@brief Costruttore secondario.
-
-		Costruttore che permette di instanziare un BST con un elemento
-		**/
-		BST(const T& _data, BST* _father):
-			elements(new long(1)),
-			data(new T(_data)),
-			father(_father),
-			left(nullptr),
-			right(nullptr)
-		{
-		}
 
 		/**
 		@brief Copy constructor.
@@ -130,9 +133,11 @@ class BST
 		BST(const BST<T, Comparator>& other)
 		{
 			this->father = nullptr;
-			this->data = new T(*other.data);
+			if(other.data)
+				this->data = new T(*other.data);
+			else
+				this->data = nullptr;
 			this->elements = new long(*other.elements);
-			
 			if (other.left)
 				this->left = new BST(*(other.left), this);
 			else
@@ -235,7 +240,7 @@ class BST
 				if(this->right)
 					return this->right->exists(key);
 			}
-			else if(comparator(key, *data) < 0)
+			else if(comparator(key, *data) < 0) //Minore del nodo corrente
 				if(this->left)
 					return this->left->exists(key);
 			return false;
@@ -248,20 +253,24 @@ class BST
 		@param key dato della radice del sottoalbero
 		@return Riferimento al nuovo sottoalbero, null se il valore non è presente
 		**/
+		
+		
 		BST<T, Comparator>* subtree(const T& key) const
 		{
 			if (*this->elements!=0 && comparator(key, *data)==0)
-				return new BST(*this, nullptr);
-			if (*this->elements!=0)
+				return new BST(*this);
+			else if (*this->elements!=0)
 			{
-				if (comparator(key, *data) > 0 && right)
-					return right->subtree(key);
-				else if (left)
+				if (comparator(key, *data) > 0 && right) //Maggiore del nodo corrente
+					return right->subtree(key);		
+				else if (left)							//Minore del nodo corrente
 					return left->subtree(key);
 			}
 			else
-				return nullptr;
+				return nullptr;							//Non ho trovato nulla
 		}
+		
+		
 		/**
 		@brief Operatore di assegnamento.
 		Permette la copia tra BST
@@ -270,14 +279,22 @@ class BST
 		**/
 		BST<T, Comparator>& operator=(const BST<T, Comparator>& other)
 		{
-			//std::cout << "ASSIGNMENT OPERATOR\n";
 			if(&other != this)
 			{
-				this->elements = other.elements;
-				this->data = other.data;
-				this->father = other.father;
-				this->left = other.left;
-				this->right = other.right;
+				this->father = nullptr;
+				if(other.data)
+					this->data = new T(*other.data);
+				else
+					this->data = nullptr;
+				this->elements = new long(*other.elements);
+				if (other.left)
+					this->left = new BST(*(other.left), this);
+				else
+					this->left = nullptr;
+				if (other.right)
+					this->right = new BST(*(other.right), this);
+				else
+					this->right = nullptr;
 			}
 			return *this;
 		}
@@ -449,7 +466,10 @@ class BST
 			Costruttore di inizializzazione usato dalla classe container.
 			per metodi begin() e end()
 			**/
-			ConstBSTForwardIterator(const BST<T, Comparator>* p) : node(p), leftdone(false) {next();}
+			ConstBSTForwardIterator(const BST<T, Comparator>* p) : node(p), leftdone(false)
+			{
+				next();
+			}
 			
 	};
 	
