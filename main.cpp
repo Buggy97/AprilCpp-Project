@@ -213,7 +213,7 @@ bool test4()
 	BST<int>* sub5 = pbstint->subtree(5);
 	if(sub5->size()!=5)
 		return false;
-	for (int i : {5,6,7,8,9})
+	for (int i = 5; i < 10; i++)
 		if(!sub5->exists(i))
 			return false;
 	//Ordine decrescente
@@ -227,7 +227,7 @@ bool test4()
 	BST<int>* sub5_ = bstint_.subtree(5);
 	if(sub5_->size()!=6)
 		return false;
-	for (int i : {0,1,2,3,4,5})
+	for (int i = 0; i < 6; i++)
 		if(!sub5_->exists(i))
 			return false;
 	//Ordine sparso
@@ -244,14 +244,15 @@ bool test4()
 	BST<int>* sub5__ = pbstint__->subtree(5);
 	if(sub5__->size()!=7)
 		return false;
-	for (int i : {1,2,3,5,7,8,9})
-		if(!sub5__->exists(i))
+	int farr[] = {1,2,3,5,7,8,9};
+	for (int i = 0; i < 7; i++)
+		if(!sub5__->exists(farr[i]))
 			return false;
 	BST<int>* sub3__ = pbstint__->subtree(2);
 	delete pbstint__;
 	if(sub3__->size()!=3)
 		return false;
-	for (int i : {1,2,3})
+	for (int i = 1; i < 4; i++)
 		if(!sub3__->exists(i))
 			return false;
 	delete pvecint;

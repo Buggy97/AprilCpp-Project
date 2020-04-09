@@ -132,7 +132,6 @@ class BST
 		**/
 		BST(const BST<T, Comparator>& other)
 		{
-			std::cout << "\nCalled cctor\n";
 			this->father = nullptr;
 			if(other.data)
 				this->data = new T(*other.data);
@@ -279,7 +278,6 @@ class BST
 		**/
 		BST<T, Comparator>& operator=(const BST<T, Comparator>& other)
 		{
-			std::cout << "assignment op\n";
 			if(&other != this)
 			{
 				//Copio other in oggetto temporaneo ed effettuo lo swap sui membri
