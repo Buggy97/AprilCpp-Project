@@ -161,8 +161,11 @@ void MainWindow::table2Clicked(const QModelIndex& i)
 void MainWindow::processEntry(QString entry, QTableWidget* table, QMap<QString, int>& map)
 {
     QString rawLink = entry.split(" ")[0];
-    QString sublink = rawLink.right(rawLink.length()-rawLink.lastIndexOf("wiki"));
-    sublink.chop(1);
+    QString sublink;
+    if((rawLink.length()-rawLink.lastIndexOf("wiki"))<rawLink.length())
+        sublink = rawLink.right(rawLink.length()-rawLink.lastIndexOf("wiki"));
+    if(sublink.size()>0)
+        sublink.chop(1);
     QString wikiLink;
     if(sublink.length()<=5)
         wikiLink = "Nessun link disponibile";
@@ -172,9 +175,11 @@ void MainWindow::processEntry(QString entry, QTableWidget* table, QMap<QString, 
     QString artistName = entry.right(namePos).trimmed();
     artistName.replace("_", " ");
     artistName = artistName.trimmed();
-    artistName[0] = artistName[0].toUpper();
-    QString firstArtistLetter = QString(artistName[0]);
-
+    if(artistName.size()!=0)
+        artistName[0] = artistName[0].toUpper();
+    QString firstArtistLetter = "\0";
+    if(artistName.size()!=0)
+        firstArtistLetter = QString(artistName[0]);
     if(namePos!=0 && map.contains(firstArtistLetter))
         map[firstArtistLetter]++;
     else if(namePos!=0)
