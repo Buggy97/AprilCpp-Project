@@ -269,8 +269,7 @@ class BST
 				else if (left)							//Minore del nodo corrente
 					return left->subtree(key);
 			}
-			else
-				return nullptr;							//Non ho trovato nulla
+			return nullptr;							//Non ho trovato nulla
 		}
 		
 		
