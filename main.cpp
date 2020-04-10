@@ -348,17 +348,26 @@ bool test5()
 	for(int i = 0; i < 10; i++)
 		integerBST.insert(new Integer(i));
 		
+		
 	BST<Integer*, IntegerDescendCompPointer>::const_iterator itP = integerBST.begin();
+	
 	while(itP!=integerBST.end())
 		std::cout << **itP << " ", delete *itP, itP++;
 	
 	BST<Integer> intBST_;
 	
-	for(int i = 0; i < 10; i++)
-		intBST_.insert(Integer(i));
+	int var[] = {5,2,8,1,3,7,9};
+	for(int i = 0; i < 7; i++)
+		intBST_.insert(Integer(var[i]));
+	
+	for(int i = 0; i < 7; i++)
+		if(!intBST_.exists(Integer(var[i])))
+			return false;
+	if(intBST_.exists(Integer(98)))
+		return false;
 
 	BST<Integer> newbst = intBST_;
-	
+	;
 	
 	if(newbst.size()!=intBST_.size())
 		return false;
@@ -387,6 +396,21 @@ bool test5()
 	it_ = intBST_.begin();
 	it_ = intBST_.begin();
 	
+	BST<Integer>* intBST_subtree8 = intBST_.subtree(Integer(8));
+	BST<Integer>::const_iterator it_sub = intBST_subtree8->begin();
+	std::cout << "Stampa valori intBST_subtree8 : " << std::endl;
+	std::cout << *intBST_subtree8;
+	std::cout << "Stampa elementi intBST_subtree8 : " << intBST_subtree8->size() << std::endl;
+	struct pari_Integer
+	{
+		inline bool operator()(const Integer& a)
+		{
+			return (a.random_val%2==0);
+		}
+	};
+	std::cout << "Stampa valori pari intBST_ : " << std::endl;
+	printIF<BST<Integer>, pari_Integer>(intBST_);
+	std::cout << std::endl;
 	std::cout << "Stampa valori intBST_ : " << std::endl;
 	while(it_!=intBST_.end())
 		std::cout << it_->random_val << " ", it_++;
@@ -394,7 +418,8 @@ bool test5()
 		
 	if(!intBST_.exists(42))
 		return false;
-
+	
+	delete intBST_subtree8;
 	return true;
 }
 
