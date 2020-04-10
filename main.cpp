@@ -1,12 +1,9 @@
-#include <bits/stdc++.h> 
-#include <iostream>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
-#include <vector>
+#include <algorithm> //per ordinare i vector
+#include <iostream> //per cout
+#include <math.h> //RAND
+#include <time.h> //Per inizializzare la rand
+#include <vector> //contenitore vector per confrontare i valori nei test
 #include "BST.h"
-/* run this program using the console pauser or add your own getch, system("pause") or input loop */
-
 
 /**
 	@brief Test per controllare la correttezza dell'inserimento
@@ -70,7 +67,7 @@ bool test1()
 		pvecint__->push_back(tmp);
 		pbstint__->insert(tmp);
 	}
-	sort(vecint__.begin(), vecint__.end());
+	std::sort(vecint__.begin(), vecint__.end());
 	std::vector<int>::const_iterator it1__ = vecint__.begin();
 	BST<int>::const_iterator it2__ = bstint__.begin();
 	while(it1__!=vecint__.end() && it2__!=bstint__.end())
@@ -188,6 +185,9 @@ bool test3()
 	for(int i = 0; i < 10; i++)
 		pbstint->insert(i);
 		
+	std::cout << "Stampa contenuto con operator <<: " << *pbstint;
+	std::cout << "Stampa contenuto con print: ";
+	pbstint->print();
 	std::cout << "Lista dei numeri pari : ";
 	printIF< BST<int, simple_comp>, pari>(*pbstint);
 	std::cout << std::endl;
@@ -343,25 +343,40 @@ bool test5()
 	if(integerBST.size()!=0)
 		return false;
 		
-	for(int i : {0,1,2,3,4,5,6,7,8,9})
+	for(int i = 0; i < 10; i++)
 		integerBST.insert(new Integer(i));
-	for(Integer* f : integerBST)
-		std::cout << *f << " ", delete f;
+		
+	BST<Integer*, IntegerDescendCompPointer>::const_iterator itP = integerBST.begin();
+	while(itP!=integerBST.end())
+		std::cout << **itP << " ", delete *itP, itP++;
 	
 	BST<Integer> intBST_;
+	
+	for(int i = 0; i < 10; i++)
+		intBST_.insert(Integer(i));
+
 	BST<Integer> newbst = intBST_;
+	
 	
 	if(newbst.size()!=intBST_.size())
 		return false;
 	
+	newbst = intBST_; //Test leak
 	newbst = intBST_;
-	
+	newbst = intBST_;
+	newbst = intBST_;
+	newbst = newbst;
+	newbst = newbst;
+	newbst = newbst;
+
 
 	if(newbst.size()!=intBST_.size())
 		return false;	
 	intBST_.insert(Integer(42));
 	
 	BST<Integer>::const_iterator it_ = intBST_.begin();
+	BST<Integer>::const_iterator itne = newbst.begin();
+	
 	BST<Integer>::const_iterator g = it_;
 	it_++;
 	std::cout << std::endl;
@@ -373,8 +388,15 @@ bool test5()
 			
 	std::cout << "Iterator assignement check: " << *g << std::endl;	
 	
-	for(Integer a : intBST_)
-		std::cout << "single item check: " << a << std::endl;
+	it_ = intBST_.begin(); //Test leak
+	it_ = intBST_.begin();
+	it_ = intBST_.begin();
+	
+	
+	std::cout << "Stampa valori intBST_ : " << std::endl;
+	while(it_!=intBST_.end())
+		std::cout << it_->random_val << " ", it_++;
+	std::cout << std::endl;
 		
 	if(!intBST_.exists(42))
 		return false;
@@ -383,17 +405,16 @@ bool test5()
 	for(int i = 0; i < 10; i++)
 	{
 		int val = rand()%100;
-		if(val!=42 && intBST_.exists(val))
+		if(val!=42 && intBST_.exists(Integer(val)))
 			return false;
 	}
 	return true;
 }
 
 
-
 int main(int argc, char** argv) 
 {
-	std::cout << "Progetto C++ Aprile Farjad Ali 829940" << std::endl;
+	std::cout << "Progetto C++ Aprile Farjad Ali 829940" << std::endl << std::endl;
 	std::cout << "Testing insert: " << (test1()?"PASS":"FAIL") << std::endl;
 	std::cout << "Testing exist: " << (test2()?"PASS":"FAIL") << std::endl;
 	std::cout << "Testing << and printIF: " << (test3()?"PASS":"FAIL") << std::endl;
