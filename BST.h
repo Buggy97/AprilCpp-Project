@@ -230,7 +230,7 @@ class BST
 		Trova un nodo con valore specificato e resitituisce una copia del suo
 		sottoalbero.
 		@param key dato della radice del sottoalbero
-		@return Riferimento al nuovo sottoalbero, null se il valore non è presente
+		@return Riferimento al nuovo sottoalbero, null se il valore non ï¿½ presente
 		**/
 		BST<T, Comparator>* subtree(const T& key) const
 		{
@@ -321,6 +321,7 @@ class BST
 	
 			/** 
 			@brief Ritorna il dato riferito dall'iteratore (dereferenziamento).
+			@return l'oggetto iterato
 			**/
 			reference operator*() const 
 			{
@@ -329,14 +330,16 @@ class BST
 			
 			/**
 			@brief Ritorna il puntatore al dato riferito dall'iteratore.
+			@return puntatore dell'oggetto iterato
 			**/
 			pointer operator->() const 
 			{
-				return &(*node->data);
+				return node->data;
 			}
 			
 			/**
 			@brief Operatore di iterazione post-incremento.
+			@return riferimento dell'iteratore
 			**/
 			ConstBSTForwardIterator operator++(int)
 			{
@@ -347,6 +350,7 @@ class BST
 			
 			/**
 			@brief Operatore di iterazione pre-incremento.
+			@return riferimento dell'iteratore
 			**/
 			ConstBSTForwardIterator& operator++()
 			{
@@ -356,6 +360,8 @@ class BST
 			
 			/**
 			@brief Uguaglianza.
+			@param elemento da confrontare
+			@return booleano che indica l'esito
 			**/
 			bool operator==(const ConstBSTForwardIterator &other) const
 			{
@@ -364,6 +370,8 @@ class BST
 			
 			/**
 			@brief Diversita'.
+			@param elemento da confrontare
+			@return booleano che indica l'esito
 			**/
 			bool operator!=(const ConstBSTForwardIterator &other) const 
 			{
@@ -415,7 +423,7 @@ class BST
 		        // Se il figlio destro non esiste torno al padre
 		        else if (node->father) 
 		        { 
-		            // Se questo nodo è il figlio del proprio padre
+		            // Se questo nodo ï¿½ il figlio del proprio padre
 		            // allora visito il padre
 		            while (node->father && 
 		                   node == node->father->right) 
@@ -476,9 +484,12 @@ template<typename T, typename Comparator> Comparator BST<T, Comparator>::compara
 /**
 	@brief Overloading dell'operatore <<.
 		   Permette di stampare il contenuto in order dell'albero.
+	@param os std::ostream su cui stampare il contenuto
+	@param elem elemento da stampare
+	@return riferimento della std::stream su cui e' stato stampato il contenuto
 **/
 template<typename T, typename Comparator>
-std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
+std::ostream& operator<< (std::ostream& os, const BST<T,Comparator>& elem)
 {
 	elem.print(os);
 	return os;
