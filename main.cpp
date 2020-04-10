@@ -52,7 +52,6 @@ bool test1()
 		it1_++;
 		it2_++;
 	}
-	srand(time(0));
 	//Ordine sparso
 	std::vector<int> vecint__;
 	BST<int> bstint__;
@@ -231,7 +230,6 @@ bool test4()
 		if(!sub5_->exists(i))
 			return false;
 	//Ordine sparso
-	srand(time(0));
 	std::vector<int>* pvecint__ = new std::vector<int>();
 	BST<int>* pbstint__ = new BST<int>();
 	int var[] = {5,2,8,1,3,7,9};
@@ -311,7 +309,7 @@ std::ostream& operator<< (std::ostream& os, const Integer& other)
 **/	
 bool test5()
 {
-	srand(time(NULL));
+	srand(time(0));
 	struct IntegerDescendComp
 	{
 		inline int operator()(const Integer& a, const Integer& b) const
@@ -400,14 +398,7 @@ bool test5()
 		
 	if(!intBST_.exists(42))
 		return false;
-		
-	srand(time(NULL));	
-	for(int i = 0; i < 10; i++)
-	{
-		int val = rand()%100;
-		if(val!=42 && intBST_.exists(Integer(val)))
-			return false;
-	}
+
 	return true;
 }
 
