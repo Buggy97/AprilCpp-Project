@@ -240,6 +240,9 @@ bool test4()
 		pbstint__->insert(tmp);
 	}
 	BST<int>* sub5__ = pbstint__->subtree(5);
+	BST<int>* sub5___ = pbstint__->subtree(-99);
+	if(sub5___)
+		return false;
 	if(sub5__->size()!=7)
 		return false;
 	int farr[] = {1,2,3,5,7,8,9};
@@ -253,6 +256,7 @@ bool test4()
 	for (int i = 1; i < 4; i++)
 		if(!sub3__->exists(i))
 			return false;
+			
 	delete pvecint;
 	delete pbstint;
 	delete sub5;
@@ -379,17 +383,9 @@ bool test5()
 	it_++;
 	std::cout << std::endl;
 	
-	if(it_!=intBST_.end())
-		std::cout << "Iterator assignement check: " << *it_ << std::endl;
-	else
-		std::cout << "Iterator assignement check: " << "nullptr" << std::endl;	
-			
-	std::cout << "Iterator assignement check: " << *g << std::endl;	
-	
 	it_ = intBST_.begin(); //Test leak
 	it_ = intBST_.begin();
 	it_ = intBST_.begin();
-	
 	
 	std::cout << "Stampa valori intBST_ : " << std::endl;
 	while(it_!=intBST_.end())
@@ -406,9 +402,9 @@ bool test5()
 int main(int argc, char** argv) 
 {
 	std::cout << "Progetto C++ Aprile Farjad Ali 829940" << std::endl << std::endl;
-	std::cout << "Testing insert: " << (test1()?"PASS":"FAIL") << std::endl;
-	std::cout << "Testing exist: " << (test2()?"PASS":"FAIL") << std::endl;
-	std::cout << "Testing << and printIF: " << (test3()?"PASS":"FAIL") << std::endl;
-	std::cout << "Test subtree: " << (test4()?"PASS":"FAIL") << std::endl;
-	std::cout << "Test mixed: " << (test5()?"PASS":"FAIL") << std::endl;
+	std::cout << "Testing insert: \n" << (test1()?"PASS":"FAIL") << std::endl;
+	std::cout << "Testing exist: \n" << (test2()?"PASS":"FAIL") << std::endl;
+	std::cout << "Testing << and printIF: \n" << (test3()?"PASS":"FAIL") << std::endl;
+	std::cout << "Test subtree: \n" << (test4()?"PASS":"FAIL") << std::endl;
+	std::cout << "Test mixed: \n" << (test5()?"PASS":"FAIL") << std::endl;
 }

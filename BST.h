@@ -10,9 +10,6 @@
 @brief Dichiarazione della classe BST (Binary search tree).
 **/
 
-//Forward declaration per operatore << 
-template <typename T, typename Comparator> class BST;
-
 /**
 @brief Eccezione per elemento doppio inserito.
 **/
@@ -235,8 +232,6 @@ class BST
 		@param key dato della radice del sottoalbero
 		@return Riferimento al nuovo sottoalbero, null se il valore non è presente
 		**/
-		
-		
 		BST<T, Comparator>* subtree(const T& key) const
 		{
 			if (*this->elements!=0 && comparator(key, *data)==0)
@@ -249,8 +244,7 @@ class BST
 					return left->subtree(key);
 			}
 			return nullptr;							//Non ho trovato nulla
-		}
-		
+		}		
 		
 		/**
 		@brief Operatore di assegnamento.
