@@ -4,6 +4,7 @@
 #include <iostream>  //per usare cout
 #include <iterator>  //per std::forward_iterator_tag
 #include <cstddef>   //per std::ptrdiff_t
+#include <algorithm>  //per std::swap
 
 /**
 @file BST.h 
