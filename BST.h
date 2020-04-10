@@ -67,31 +67,7 @@ class BST
 		BST* father; ///< Padre del nodo
 		BST* left; ///< Figlio sinistro del nodo
 		BST* right; ///< Figlio destro del nodo
-		/**
-		@brief Costruttore di copia interno.
 
-		Costruttore di copia interno che permette di copiare un BST riassegnandoli il padre
-		Viene usato internamente dal costruttore di copia pubblico
-		@param other BST da usare per creare quello corrente con padre diverso
-		@param _father padre per il nuovo BST
-		**/
-		BST(const BST<T, Comparator>& other, BST<T, Comparator>* _father)
-		{
-			this->father = _father;
-			if(other.data)
-				this->data = new T(*other.data);
-			else
-				this->data = nullptr;
-			this->elements = new long(*other.elements);
-			if (other.left)
-				this->left = new BST(*(other.left), this);
-			else
-				this->left = nullptr;
-			if (other.right)
-				this->right = new BST(*(other.right), this);
-			else
-				this->right = nullptr;
-		}
 		/**
 		@brief Costruttore secondario.
 
@@ -139,11 +115,17 @@ class BST
 				this->data = nullptr;
 			this->elements = new long(*other.elements);
 			if (other.left)
-				this->left = new BST(*(other.left), this);
+			{
+				this->left = new BST(*(other.left));
+				this->left->father = this;
+			}
 			else
 				this->left = nullptr;
 			if (other.right)
-				this->right = new BST(*(other.right), this);
+			{
+				this->right = new BST(*(other.right));
+				this->right->father = this;
+			}
 			else
 				this->right = nullptr;
 		}
@@ -515,12 +497,12 @@ std::ostream& operator<< (std::ostream& os,const BST<T,Comparator>& elem)
 	@param Comparator scomparatore usato dal bst
 	@param Predicate predicato che un dato deve soddisfare per essere stampato
 **/
-template <typename T, typename Comparator, typename Predicate> 
-void printIF(const BST<T, Comparator>& tree)
+template <typename T, typename Predicate> 
+void printIF(const T& tree)
 {
 	Predicate predicate;
-	typename BST<T, Comparator>::const_iterator it = tree.begin();
-	typename BST<T, Comparator>::const_iterator it_end = tree.end();
+	typename T::const_iterator it = tree.begin();
+	typename T::const_iterator it_end = tree.end();
 	while(it!=it_end)
 	{
 		if(predicate(*it))

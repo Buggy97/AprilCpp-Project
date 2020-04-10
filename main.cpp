@@ -189,7 +189,7 @@ bool test3()
 		pbstint->insert(i);
 		
 	std::cout << "Lista dei numeri pari : ";
-	printIF<int, simple_comp, pari>(*pbstint);
+	printIF< BST<int, simple_comp>, pari>(*pbstint);
 	std::cout << std::endl;
 	
 	delete pbstint;
